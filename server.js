@@ -12,6 +12,7 @@ app.set("views", __dirname + "/views");
 app.set("layout", "layouts/layout");
 app.use(expressLayouts);
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: false }));
 
 // MongoDB config
 const mongoose = require("mongoose");
@@ -25,8 +26,12 @@ db.once("open", () => console.log("Connected to DB"));
 
 // Routes imports
 const indexRouter = require("./routes/index");
+const surveysRouter = require("./routes/surveys");
+const accountRouter = require("./routes/account");
 
 // Routes
-app.get("/", indexRouter);
+app.use("/", indexRouter);
+app.use("/surveys", surveysRouter);
+app.use("/account", accountRouter);
 
 app.listen(process.env.PORT || 3000);
