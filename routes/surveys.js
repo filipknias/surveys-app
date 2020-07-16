@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
+const { isAuth } = require("../config/authUser");
+
 router.get("/search", (req, res) => {
-  res.render("surveys/search");
+  res.render("surveys/search", { user: req.user });
 });
 
-router.get("/create", (req, res) => {
-  res.render("surveys/create");
+router.get("/create", isAuth, (req, res) => {
+  res.render("surveys/create", { user: req.user });
 });
 
 module.exports = router;

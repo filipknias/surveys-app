@@ -14,6 +14,31 @@ app.use(expressLayouts);
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 
+// Passport config
+const passport = require("passport");
+const flash = require("express-flash");
+const session = require("express-session");
+app.use(flash());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Flash messages
+app.use((req, res, next) => {
+  res.locals.info_message = req.flash("info_message");
+  res.locals.error = req.flash("error");
+  res.locals.success = req.flash("success");
+  next();
+});
+
 // MongoDB config
 const mongoose = require("mongoose");
 mongoose.connect(process.env.DATABASE_URL, {

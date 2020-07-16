@@ -1,9 +1,14 @@
+<%- include('../partials/navbar', { user }); %>
+
 <h1>Create new account</h1>
+
+<%- include('../partials/errorMessage') %>
 
 <form action="/account/register" method="POST">
   <div>
     <label for="nickname">Nickname</label>
     <input
+      value="<%= typeof formFields !== 'undefined' ? formFields.nickname : '' %>"
       type="text"
       name="nickname"
       id="nickname"
@@ -15,6 +20,7 @@
   <div>
     <label for="email">E-mail</label>
     <input
+      value="<%= typeof formFields !== 'undefined' ? formFields.email : '' %>"
       type="email"
       name="email"
       id="email"
@@ -26,10 +32,23 @@
   <div>
     <label for="password">Password</label>
     <input
+      value="<%= typeof formFields !== 'undefined' ? formFields.password : '' %>"
       type="password"
       name="password"
       id="password"
       placeholder="Your password..."
+      required
+    />
+  </div>
+
+  <div>
+    <label for="password2">Confirm Password</label>
+    <input
+      value="<%= typeof formFields !== 'undefined' ? formFields.password2 : '' %>"
+      type="password"
+      name="password2"
+      id="password2"
+      placeholder="Confirm your password..."
       required
     />
   </div>

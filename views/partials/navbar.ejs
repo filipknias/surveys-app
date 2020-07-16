@@ -7,18 +7,19 @@
     <a href="/surveys/search">Explore</a>
   </li>
   <li>
-    <a href="/surveys/create">
-      <button>Create Survey</button>
-    </a>
+    <a href="/surveys/create">Create Survey</a>
+  </li>
+  <% if (typeof user !== 'undefined') { %>
+  <li>
+    <%= user.nickname %>
+    <a href="/account/logout">Log Out</a>
+  </li>
+  <% } else { %>
+  <li>
+    <a href="/account/register">Register</a>
   </li>
   <li>
-    <a href="/account/register">
-      <button>Register</button>
-    </a>
+    <a href="/account/login">Log In</a>
   </li>
-  <li>
-    <a href="/account/login">
-      <button>Log In</button>
-    </a>
-  </li>
+  <% } %>
 </ul>
