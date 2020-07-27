@@ -1,18 +1,16 @@
-<%- include('../partials/navbar', { user }); %>
-
 <h1>Create new account</h1>
 
-<%- include('../partials/errorMessage') %>
+<%- include('../partials/errorMessages') %>
 
 <form action="/account/register" method="POST">
   <div>
-    <label for="nickname">Nickname</label>
+    <label for="displayName">Display Name</label>
     <input
-      value="<%= typeof formFields !== 'undefined' ? formFields.nickname : '' %>"
+      value="<%= typeof formFields !== 'undefined' ? formFields.displayName : '' %>"
       type="text"
-      name="nickname"
-      id="nickname"
-      placeholder="Your nickname..."
+      name="displayName"
+      id="displayName"
+      placeholder="Your name..."
       required
     />
   </div>

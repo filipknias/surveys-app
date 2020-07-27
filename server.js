@@ -5,6 +5,7 @@ if (process.env.NODE_ENV !== "production") {
 const express = require("express");
 const app = express();
 const expressLayouts = require("express-ejs-layouts");
+const methodOverride = require("method-override");
 
 // Server config
 app.set("view engine", "ejs");
@@ -13,6 +14,7 @@ app.set("layout", "layouts/layout");
 app.use(expressLayouts);
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
+app.use(methodOverride("_method"));
 
 // Passport config
 const passport = require("passport");
@@ -33,9 +35,12 @@ app.use(passport.session());
 
 // Flash messages
 app.use((req, res, next) => {
-  res.locals.info_message = req.flash("info_message");
-  res.locals.error = req.flash("error");
-  res.locals.success = req.flash("success");
+  // Logged User
+  res.locals.user = req.user || null;
+  // Success Messages
+  res.locals.success_message = req.flash("success_message");
+  // Error Messages
+  res.locals.error_message = req.flash("error_message");
   next();
 });
 
@@ -44,6 +49,7 @@ const mongoose = require("mongoose");
 mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 const db = mongoose.connection;
 db.on("error", (error) => console.error(error));

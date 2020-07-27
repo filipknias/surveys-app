@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  nickname: {
+  displayName: {
     type: String,
     required: true,
-    minlength: 4,
-    maxlength: 10,
+    minlength: 5,
+    maxlength: 20,
   },
   email: {
     type: String,
@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
+  },
+  createdAt: {
+    type: Date,
+    required: true,
+    default: Date.now,
   },
 });
 

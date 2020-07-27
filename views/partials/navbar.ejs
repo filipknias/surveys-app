@@ -9,9 +9,9 @@
   <li>
     <a href="/surveys/create">Create Survey</a>
   </li>
-  <% if (typeof user !== 'undefined') { %>
+  <% if (locals.user) { %>
   <li>
-    <%= user.nickname %>
+    <%= locals.user.displayName %>
     <a href="/account/logout">Log Out</a>
   </li>
   <% } else { %>

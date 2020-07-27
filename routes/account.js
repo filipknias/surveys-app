@@ -7,7 +7,7 @@ const passport = require("passport");
 const User = require("../models/user");
 const passportConfig = require("../config/passportConfig");
 const validateUser = require("../config/validateUser");
-const { isNotAuth, isAuth } = require("../config/authUser");
+const { isNotAuth } = require("../config/authUser");
 
 // Passport Init
 passportConfig(
@@ -21,52 +21,55 @@ passportConfig(
   }
 );
 
+// GET /account/login
 // Login Page
 router.get("/login", isNotAuth, (req, res) => {
-  res.render("account/login", { user: req.user });
+  res.render("account/login");
 });
 
+// GET /account/register
 // Register Page
 router.get("/register", isNotAuth, (req, res) => {
-  res.render("account/register", { user: req.user });
+  res.render("account/register");
 });
 
-// Welcome Page
-router.get("/welcome", isNotAuth, (req, res) => {
-  res.render("account/welcome", { user: req.user });
-});
-
+// POST /account/login
 // Login User
 router.post("/login", isNotAuth, (req, res, next) => {
   passport.authenticate("local", {
     successRedirect: "/",
     failureRedirect: "/account/login",
     failureFlash: true,
-    successFlash: true,
   })(req, res, next);
 });
 
-// Create New User
+// POST /account/register
+// Create New User and Save in DB
 router.post("/register", isNotAuth, validateUser, async (req, res) => {
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
   const user = new User({
-    nickname: req.body.nickname,
+    displayName: req.body.displayName,
     email: req.body.email,
     password: hashedPassword,
   });
 
   try {
     await user.save();
-    res.redirect("welcome");
+    req.flash(
+      "success_message",
+      "Thank you for creating account, you can now log in !"
+    );
+    res.redirect("/account/login");
   } catch {
-    res.redirect("account/register");
+    res.redirect("/account/register");
   }
 });
 
+// GET /account/logout
 // Logout User
 router.get("/logout", (req, res) => {
   req.logout();
-  req.flash("info_message", "You are now logged out!");
+  req.flash("success_message", "You are now logged out !");
   res.redirect("/account/login");
 });
 

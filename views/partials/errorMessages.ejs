@@ -1,0 +1,23 @@
+<!-- Register Error Messages -->
+<% if (typeof errors !== 'undefined') { %>
+<div>
+  <%= errors[0].message %>
+</div>
+<% } %>
+
+<!-- Login Error Messages -->
+<% if (messages.error) { %> <%= messages.error %> <% } %>
+
+<!-- Error Messages -->
+<% if (error_message != '') { %>
+<div>
+  <%= error_message %>
+</div>
+<% } %>
+
+<!-- Success Messages -->
+<% if (success_message != '') { %>
+<div>
+  <%= success_message %>
+</div>
+<% } %>

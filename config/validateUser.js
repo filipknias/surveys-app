@@ -2,18 +2,18 @@ module.exports = async function (req, res, next) {
   const User = require("../models/user");
 
   let errors = [];
-  const { nickname, email, password, password2 } = req.body;
+  const { displayName, email, password, password2 } = req.body;
 
   // Nickname check
-  const nicknameExists = await User.findOne({ nickname: nickname });
-  if (nicknameExists) {
-    errors.push({ message: "Account with this nickname arleady exist." });
+  const nameExists = await User.findOne({ displayName: displayName });
+  if (nameExists) {
+    errors.push({ message: "Account with this name arleady exist." });
   }
 
   // Nickname length check
-  if (nickname.length < 4 || nickname.length > 10) {
+  if (displayName.length < 5 || displayName.length > 20) {
     errors.push({
-      message: "Nickname length must be between 4 and 10 characters.",
+      message: "Name length must be between 5 and 20 characters.",
     });
   }
 
@@ -38,9 +38,8 @@ module.exports = async function (req, res, next) {
   // Check if it is any errors
   if (errors.length > 0) {
     res.render("account/register", {
-      user: req.user,
       errors,
-      formFields: { nickname, email, password, password2 },
+      formFields: { displayName, email, password, password2 },
     });
   } else {
     next();

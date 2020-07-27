@@ -12,9 +12,7 @@ module.exports = function (passport, bcrypt, getUserByEmail, getUserById) {
       try {
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (passwordMatch) {
-          return done(null, user, {
-            message: `Hello ${user.nickname}, you are now logged in!`,
-          });
+          return done(null, user);
         } else {
           return done(null, false, { message: "Password incorrect." });
         }
