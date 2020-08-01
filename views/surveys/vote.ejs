@@ -8,6 +8,7 @@
 <a href="/surveys/<%= survey.id %>/edit">Edit</a>
 <% } %>
 
+
 <form action="/surveys/<%= survey.id %>/vote?_method=PUT" method="POST">
   <% survey.answers.forEach((answer, answerIndex) => { %>
   <div>
@@ -22,12 +23,19 @@
   <% }) %>
 
   <button type="submit">Vote</button>
-  <a href="/surveys/<%= survey._id %>/results">Results</a>
+
+  <% const totalVotes = survey.answers.reduce((total, currentValue) => { %>
+    <% return total + currentValue.votes %>
+  <% }, 0) %>
+
+  
+    <a href="/surveys/<%= survey._id %>/results">Results</a>
+  
 </form>
 
 <h2>About Survey</h2>
 
-<% if (typeof description !== 'undefined') { %>
+<% if (typeof survey.description !== 'undefined') { %>
 <div>
   <label>Description</label>
   <h2><%= survey.description %></h2>

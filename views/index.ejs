@@ -1,1 +1,12 @@
 <h1>Home Page</h1>
+
+<div style="display:flex;">
+    <div style="margin-right:10px;">
+        <h2>Latest surveys</h2>
+        <%- include('./partials/surveysGrid', { surveys: surveys[0] }); %>
+    </div>
+    <div>
+        <h2>Most popular</h2>
+        <%- include('./partials/surveysGrid', { surveys: surveys[1] }); %>
+    </div>
+</div>

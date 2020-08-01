@@ -5,13 +5,12 @@ const surveySchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 5,
-    maxlength: 20,
+    maxlength: 30,
   },
   description: {
     type: String,
-    required: false,
-    minlength: 20,
-    maxlength: 100,
+    minlength: 5,
+    maxlength: 40,
   },
   answers: {
     type: Array,
@@ -30,8 +29,7 @@ const surveySchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    default: "open",
-    enum: ["open", "closed"],
+    enum: ["public", "private", "closed"],
   },
 });
 
