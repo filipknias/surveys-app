@@ -2,57 +2,19 @@ const express = require("express");
 const router = express.Router();
 
 // Imports
-const Survey = require("../models/survey");
-const { isAuth } = require("../config/authUser");
+const Survey = require("../models/Survey");
+const Vote = require("../models/Vote");
+const verifyToken = require("../utilities/verifyToken");
 
-// GET /surveys/search
-// Explore Surveys Page
-router.get("/search", async (req, res) => {
-  let surveys;
-  if (req.query.title != null && req.query.title !== "") {
-    surveys = await Survey.find({
-      title: new RegExp(req.query.title, "i"),
-      status: "public",
-    }).populate("author");
-  } else {
-    surveys = [];
-  }
-  try {
-    // const surveys = await Survey.find(searchOptions).populate("author");
-    res.render("surveys/search", {
-      surveys: surveys,
-      searchOptions: req.query,
-    });
-  } catch {
-    res.redirect("/");
-  }
-});
-
-// GET /surveys/create
-// Create Survey Page
-router.get("/create", isAuth, (req, res) => {
-  res.render("surveys/create");
-});
-
-// POST /surveys/create
+// POST /api/surveys/create
 // Create Survey and Save in DB
-router.post("/create", isAuth, async (req, res) => {
+router.post("/create", verifyToken, async (req, res) => {
   // Create survey model
   const survey = new Survey({
     title: req.body.title,
-    answers: [],
+    answers: req.body.answers,
     author: req.user,
     status: req.body.status,
-  });
-
-  // Set all answer objects
-  req.body.answer.forEach((answer) => {
-    if (answer !== "") {
-      survey.answers.push({
-        name: answer,
-        votes: 0,
-      });
-    }
   });
 
   // Set survey description if there is any
@@ -63,53 +25,70 @@ router.post("/create", isAuth, async (req, res) => {
   // Try save survey in DB
   try {
     await survey.save();
-    res.redirect(`/surveys/${survey._id}/vote`);
+    res.status(200).json(survey);
   } catch (err) {
-    res.redirect("/surveys/create");
+    console.error(err);
+    res.status(500).json({ error: "Somethink went wrong, please try again" });
   }
 });
 
-// GET /surveys/:id/vote
-// Voting Survey Page
-router.get("/:id/vote", async (req, res) => {
+// GET /api/surveys/get
+// Get all surveys by given queries
+router.get("/get", async (req, res) => {
+  const limit = parseInt(req.query.limit) || 20;
   try {
-    const survey = await Survey.findById(req.params.id).populate("author");
-    res.render("surveys/vote", { survey: survey });
-  } catch {
-    res.redirect("/");
-  }
-});
-
-// PUT /surveys/:id/vote
-// Make a Vote and Save it in DB
-router.put("/:id/vote", async (req, res) => {
-  try {
-    // Save vote in DB
-    await Survey.findByIdAndUpdate(
-      { _id: req.params.id },
-      { $inc: { "answers.$[answer].votes": 1 } },
-      { arrayFilters: [{ "answer.name": req.body.answer }] }
-    );
-    // Redirect to survey results page
-    res.redirect(`/surveys/${req.params.id}/results`);
+    const survey = await Survey.find({ status: "public" })
+      .sort({ [req.query.sort]: -1 })
+      .limit(limit);
+    return res.status(200).json(survey);
   } catch (err) {
-    console.log(err);
-    res.redirect("/");
+    console.error(err);
+    return res
+      .status(500)
+      .json({ error: "Somethink went wrong, please try again" });
   }
 });
 
-// GET /surveys/:id/results
-// Survey Results Page
-router.get("/:id/results", async (req, res) => {
+// GET /api/surveys/get/:id
+// Get survey by id
+router.get("/get/:id", async (req, res) => {
   try {
-    const survey = await Survey.findById(req.params.id).populate("author");
-    // Sort results in descending order
-    survey.answers = survey.answers.sort((a, b) => {
-      return b.votes - a.votes;
-    });
-    res.render("surveys/results", { survey: survey });
-  } catch {
-    res.redirect("/");
+    const survey = await Survey.findById(req.params.id);
+    return res.status(200).json(survey);
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ error: "Somethink went wrong, please try again" });
+  }
+});
+
+// PUT /api/surveys/:id
+// Edit survey with given id
+router.put("/:id", verifyToken, async (req, res) => {
+  try {
+    const survey = await Survey.findByIdAndUpdate(req.params.id, req.body);
+    return res.status(200).json(survey);
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ error: "Somethink went wrong, please try again" });
+  }
+});
+
+// DELETE /api/surveys/:id
+// Delete survey with given id
+router.delete("/:id", verifyToken, async (req, res) => {
+  try {
+    const survey = await Survey.findByIdAndDelete(req.params.id);
+    const votes = await Vote.deleteMany({ survey: req.params.id });
+    return res.status(200).json({ survey, votes });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ error: "Somethink went wrong, please try again" });
   }
 });
 

@@ -9,12 +9,17 @@ const surveySchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    minlength: 5,
-    maxlength: 40,
+    minlength: 10,
+    maxlength: 50,
   },
   answers: {
     type: Array,
     required: true,
+  },
+  votesCount: {
+    type: Number,
+    required: true,
+    default: 0,
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,

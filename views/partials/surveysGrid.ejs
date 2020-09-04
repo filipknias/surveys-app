@@ -1,6 +1,0 @@
-<% surveys.forEach((survey) => { %>
-    <div style="border-bottom:1px solid black; width:300px">
-        <a href="/surveys/<%= survey.id %>/vote"><%= survey.title %></a>
-        <p>by <%= survey.author.displayName %> - <%= survey.createdAt.toDateString().substr(3) %></p>
-    </div>
-<% }) %>
