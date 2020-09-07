@@ -31,4 +31,4 @@ app.use("/api/users", usersRouter);
 app.use("/api/surveys", surveysRouter);
 app.use("/api/votes", votesRouter);
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 5000);

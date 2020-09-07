@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: $bodyBackground;
+  font-family: $main-font;
+  font-weight: $medium-font-weight;
+}
+
+.green-text {
+  color: $green;
+}

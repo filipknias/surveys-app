@@ -10,7 +10,7 @@ const Survey = require("../models/Survey");
 router.post("/:surveyId", async (req, res) => {
   const vote = new Vote({
     survey: req.params.surveyId,
-    answers: req.body.answer,
+    answer: req.body.answer,
   });
   try {
     const survey = await Survey.findById(req.params.surveyId);

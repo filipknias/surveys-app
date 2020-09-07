@@ -1,0 +1,50 @@
+.btn {
+  border: none;
+  outline: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  color: $light-text-color;
+  transition: all 0.5s ease;
+  cursor: pointer;
+  &.btn-primary {
+    background-color: $blue;
+    &:hover {
+      background-color: $blueHover;
+    }
+  }
+  &.btn-danger {
+    background-color: $red;
+    &:hover {
+      background-color: $redHover;
+    }
+  }
+  &.btn-success {
+    background-color: $green;
+    &:hover {
+      background-color: $greenHover;
+    }
+  }
+  &.btn-light {
+    background-color: $turquoise;
+    &:hover {
+      background-color: $turquoiseHover;
+    }
+  }
+  &.btn-grey {
+    background-color: $grey;
+    &:hover {
+      background-color: $greyHover;
+    }
+  }
+  &.btn-dark {
+    background-color: $dark;
+    &:hover {
+      background-color: $darkHover;
+    }
+  }
+  &.hamburger-btn {
+    padding: 1.5rem;
+    border-radius: 50%;
+  }
+}
