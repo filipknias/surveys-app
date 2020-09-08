@@ -19,9 +19,7 @@ function Navbar() {
       <ul className={open ? "navbar-nav open" : "navbar-nav"}>
         <li className="nav-item">Home</li>
         <li className="nav-item">Explore</li>
-        <li className="nav-item">
-          <div className="btn btn-danger">Create survey</div>
-        </li>
+        <li className="nav-item btn btn-danger">Create survey</li>
 
         {user ? (
           <li className="nav-item" onClick={() => setDropdown(!dropdown)}>

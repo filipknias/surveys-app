@@ -1,15 +1,17 @@
 import React from "react";
 // Styles
-import "./scss/main.css";
+// import "./scss/main.css";
+// Bootstrap
+import Container from "react-bootstrap/Container";
 // Components
 import Navbar from "./components/Navbar/Navbar";
 
 function App() {
   return (
-    <div className="container">
+    <Container>
       <Navbar />
       <h1>Main Content</h1>
-    </div>
+    </Container>
   );
 }
 
