@@ -1,0 +1,44 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  color: #6c757d;
+}
+
+a:hover {
+  text-decoration: none;
+  color: #343a40;
+}
+
+.green-text {
+  color: #24a021;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  align-self: center;
+  margin: 0 1rem;
+  font-size: 1.2rem;
+}
+
+.dropdown {
+  align-self: center;
+}
+
+@media screen and (max-width: 768px) {
+  .nav-link {
+    margin: 0.5rem 0;
+    text-align: center;
+  }
+  .dropdown {
+    width: 100%;
+  }
+}
