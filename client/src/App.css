@@ -8,6 +8,7 @@
 
 a {
   color: #6c757d;
+  display: block;
 }
 
 a:hover {
@@ -34,11 +35,17 @@ a:hover {
 }
 
 @media screen and (max-width: 768px) {
+  .container {
+    padding: 1rem !important;
+  }
   .nav-link {
-    margin: 0.5rem 0;
+    margin: 1rem 0;
     text-align: center;
   }
   .dropdown {
     width: 100%;
+  }
+  .list-group {
+    margin: 1rem 0;
   }
 }

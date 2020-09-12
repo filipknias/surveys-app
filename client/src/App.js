@@ -16,8 +16,8 @@ import Login from "./pages/Login";
 function App() {
   return (
     <Router>
-      <Container fluid className="p-0">
-        <Navbar />
+      <Navbar />
+      <Container className="p-0">
         <Switch>
           <Route exact path="/" component={Home} />
           <Route path="/explore" component={Explore} />

@@ -5,10 +5,12 @@ if (process.env.NODE_ENV !== "production") {
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const cors = require("cors");
 
 // Server config
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 
 // MongoDB config
 const mongoose = require("mongoose");
