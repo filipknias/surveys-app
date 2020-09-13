@@ -40,7 +40,8 @@ router.post("/register", registerValidation, async (req, res) => {
 
   try {
     const savedUser = await newUser.save();
-    res.status(200).json({ user: savedUser });
+    const token = jwt.sign({ _id: savedUser._id }, process.env.TOKEN_SECRET);
+    res.status(200).json({ user: savedUser, token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Somethink went wrong, please try again" });
@@ -69,7 +70,7 @@ router.post("/login", loginValidation, async (req, res) => {
 
   // Successful login
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).send({ token });
+  res.header("auth-token", token).json({ token });
 });
 
 // GET /api/users/:id
