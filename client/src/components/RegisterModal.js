@@ -1,25 +1,28 @@
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
 // Bootstrap
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Spinner from "react-bootstrap/Spinner";
 // Images
 import RegisterImage from "../components/img/register-image.svg";
 
-function Register({ history }) {
+function RegisterModal() {
+  // Refs
   const displayNameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
+  // State
   const [error, setError] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     axios
       .post("/api/users/register", {
         displayName: displayNameRef.current.value,
@@ -29,25 +32,37 @@ function Register({ history }) {
       })
       .then((res) => {
         axios.defaults.headers.common["auth-token"] = res.data.token;
-        history.push("/");
         setError(null);
+        setOpen(false);
+        setLoading(false);
       })
       .catch((err) => {
-        console.log(err.response.data);
         setError(err.response.data.errors);
+        setLoading(false);
       });
   };
 
   return (
-    <Row>
-      <Col md={7} className="mx-auto">
-        <Card body className="my-5 px-2 py-4" border="dark">
+    <>
+      <Button variant="danger" type="button" onClick={() => setOpen(true)}>
+        Join Now
+      </Button>
+      <Modal
+        show={open}
+        onShow={() => setError(null)}
+        onHide={() => setOpen(false)}
+      >
+        <Modal.Header className="flex-column">
           <Image
             src={RegisterImage}
             height="200"
             className="mx-auto my-3 d-block"
           />
-          <h2 className="text-center my-4">Create new account</h2>
+          <Modal.Title className="w-100 text-center">
+            <h2>Create new account</h2>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group>
               <Form.Label>Display Name</Form.Label>
@@ -107,17 +122,29 @@ function Register({ history }) {
                 required
               />
             </Form.Group>
-            <Link to="/login" className="my-2">
-              Arleady have an account ? Sign in and get more advantages.
-            </Link>
-            <Button type="submit" variant="primary" className="mt-3 px-5 py-2">
-              Sign Up
-            </Button>
+
+            <div className="mt-4 mb-3">
+              <Button type="submit" variant="primary">
+                {loading ? (
+                  <Spinner animation="border" />
+                ) : (
+                  <span>Sign Up</span>
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="danger"
+                className="ml-3"
+                onClick={() => setOpen(false)}
+              >
+                Cancel
+              </Button>
+            </div>
           </Form>
-        </Card>
-      </Col>
-    </Row>
+        </Modal.Body>
+      </Modal>
+    </>
   );
 }
 
-export default Register;
+export default RegisterModal;

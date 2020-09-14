@@ -6,7 +6,7 @@ function AuthRoute({ component: Component, auth, ...props }) {
     <Route
       {...props}
       render={(props) =>
-        auth === true ? <Redirect to="/" /> : <Component {...props} />
+        auth === false ? <Redirect to="/" /> : <Component {...props} />
       }
     />
   );

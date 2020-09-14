@@ -24,7 +24,8 @@ a:hover {
   font-size: 1.5rem;
 }
 
-.nav-link {
+.nav-link,
+.nav-item {
   align-self: center;
   margin: 0 1rem;
   font-size: 1.2rem;
@@ -38,7 +39,8 @@ a:hover {
   .container {
     padding: 1rem !important;
   }
-  .nav-link {
+  .nav-link,
+  .nav-item {
     margin: 1rem 0;
     text-align: center;
   }
@@ -46,6 +48,6 @@ a:hover {
     width: 100%;
   }
   .list-group {
-    margin: 1rem 0;
+    margin: 2rem 0;
   }
 }
