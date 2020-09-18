@@ -6,26 +6,27 @@ import "./App.css";
 import Container from "react-bootstrap/Container";
 // Components
 import Navbar from "./components/Navbar";
-import AuthRoute from "./components/AuthRoute";
 // Pages
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import CreateSurvey from "./pages/CreateSurvey";
+// Context
+import { UserProvider } from "./context/UserContext";
 
 function App() {
-  const auth = false;
-
   return (
-    <Router>
-      <Navbar />
-      <Container className="p-0">
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/explore" component={Explore} />
-          <AuthRoute path="/create" component={CreateSurvey} auth={auth} />
-        </Switch>
-      </Container>
-    </Router>
+    <UserProvider>
+      <Router>
+        <Navbar />
+        <Container className="p-0">
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/explore" component={Explore} />
+            <Route path="/create" component={CreateSurvey} />
+          </Switch>
+        </Container>
+      </Router>
+    </UserProvider>
   );
 }
 

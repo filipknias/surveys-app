@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
+import jwtDecode from "jwt-decode";
+import axios from "axios";
 // Bootstrap
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
@@ -13,15 +15,51 @@ import RegisterModal from "./RegisterModal";
 import ProfileIcon from "./img/profile-icon.svg";
 import AccountDropdownIcon from "./img/account-dropdown-icon.svg";
 import LogoutDropdownIcon from "./img/logout-dropdown-icon.svg";
+// Context
+import { UserContext } from "../context/UserContext";
 
 function NavbarComponent() {
-  const auth = false;
-  const user = {
-    displayName: "johny",
-    email: "johny@gmail.com",
-  };
-
   const [open, setOpen] = useState(false);
+  const [userState, setUserState] = useContext(UserContext);
+
+  // Check localStorage for user token
+  useEffect(() => {
+    const token = localStorage.getItem("auth-token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      if (decodedToken.exp * 1000 < Date.now()) {
+        setUserState({
+          isAuth: false,
+          user: {},
+        });
+      } else {
+        axios.defaults.headers.common["auth-token"] = token;
+        axios
+          .get(`/api/users/${decodedToken._id}`)
+          .then((res) => {
+            setUserState({
+              isAuth: true,
+              user: res.data,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            setUserState({
+              isAuth: false,
+              user: {},
+            });
+          });
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    setUserState({
+      isAuth: false,
+      user: {},
+    });
+    localStorage.removeItem("auth-token");
+  };
 
   return (
     <Navbar expand="md" bg="light" expanded={open}>
@@ -42,23 +80,25 @@ function NavbarComponent() {
           <Nav.Item onClick={() => setOpen(false)}>
             <Link to="/explore">Explore</Link>
           </Nav.Item>
-          {auth ? (
+          {userState.isAuth ? (
             <>
               <Nav.Item onClick={() => setOpen(false)}>
                 <Link to="/create">
                   <Button variant="danger">Create Survey</Button>
                 </Link>
               </Nav.Item>
-              <NavDropdown title={user.displayName} alignRight>
+              <NavDropdown title={userState.user.displayName} alignRight>
                 <Image
                   src={ProfileIcon}
                   height="60"
                   className="d-block ml-auto mr-auto mt-1"
                 />
                 <h3 className="text-center mt-1 mb-0 px-2">
-                  {user.displayName}
+                  {userState.user.displayName}
                 </h3>
-                <p className="text-muted text-center px-2">{user.email}</p>
+                <p className="text-muted text-center px-2">
+                  {userState.user.email}
+                </p>
                 <NavDropdown.Divider />
                 <NavDropdown.Item>
                   <Image
@@ -68,7 +108,7 @@ function NavbarComponent() {
                   />
                   Account
                 </NavDropdown.Item>
-                <NavDropdown.Item>
+                <NavDropdown.Item onClick={handleLogout}>
                   <Image
                     src={LogoutDropdownIcon}
                     height="20"

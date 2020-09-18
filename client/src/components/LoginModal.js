@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import axios from "axios";
 // Bootstrap
 import Image from "react-bootstrap/Image";
@@ -9,6 +9,8 @@ import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 // Images
 import LoginImage from "../components/img/login-image.svg";
+// Context
+import { UserContext } from "../context/UserContext";
 
 function LoginModal() {
   // Refs
@@ -18,6 +20,8 @@ function LoginModal() {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  // Context State
+  const [userState, setUserState] = useContext(UserContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -29,8 +33,13 @@ function LoginModal() {
       })
       .then((res) => {
         axios.defaults.headers.common["auth-token"] = res.data.token;
-        setError(null);
+        localStorage.setItem("auth-token", res.data.token);
         setOpen(false);
+        setUserState({
+          isAuth: true,
+          user: res.data.user,
+        });
+        setError(null);
         setLoading(false);
       })
       .catch((err) => {
@@ -59,7 +68,9 @@ function LoginModal() {
             <h2>Log In to your account</h2>
           </Modal.Title>
         </Modal.Header>
-        {error && error.general && <Alert variant="danger">{error}</Alert>}
+        {error && error.general && (
+          <Alert variant="danger">{error.general}</Alert>
+        )}
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group>
@@ -99,7 +110,7 @@ function LoginModal() {
                 {loading ? (
                   <Spinner animation="border" />
                 ) : (
-                  <span>Sign Ip</span>
+                  <span>Sign In</span>
                 )}
               </Button>
               <Button

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import axios from "axios";
 // Bootstrap
 import Image from "react-bootstrap/Image";
@@ -8,6 +8,7 @@ import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 // Images
 import RegisterImage from "../components/img/register-image.svg";
+import { UserContext } from "../context/UserContext";
 
 function RegisterModal() {
   // Refs
@@ -19,6 +20,8 @@ function RegisterModal() {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  // Context State
+  const [userState, setUserState] = useContext(UserContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,8 +35,13 @@ function RegisterModal() {
       })
       .then((res) => {
         axios.defaults.headers.common["auth-token"] = res.data.token;
-        setError(null);
+        localStorage.setItem("auth-token", res.data.token);
         setOpen(false);
+        setUserState({
+          isAuth: true,
+          user: res.data.user,
+        });
+        setError(null);
         setLoading(false);
       })
       .catch((err) => {
