@@ -36,6 +36,9 @@ const surveySchema = new mongoose.Schema({
     required: true,
     enum: ["public", "private", "closed"],
   },
+  expirationDate: {
+    type: Date,
+  },
 });
 
 module.exports = mongoose.model("Survey", surveySchema);

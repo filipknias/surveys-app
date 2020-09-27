@@ -39,9 +39,14 @@ router.post("/register", registerValidation, async (req, res) => {
   }
 
   try {
+    // Successful login
     const savedUser = await newUser.save();
     const token = jwt.sign({ _id: savedUser._id }, process.env.TOKEN_SECRET);
-    res.status(200).json({ user: savedUser, token });
+    const userData = {
+      displayName: savedUser.displayName,
+      email: savedUser.email,
+    };
+    res.status(200).json({ token, user: userData });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Somethink went wrong, please try again" });
@@ -70,7 +75,11 @@ router.post("/login", loginValidation, async (req, res) => {
 
   // Successful login
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).json({ token });
+  const userData = {
+    displayName: user.displayName,
+    email: user.email,
+  };
+  res.header("auth-token", token).json({ token, user: userData });
 });
 
 // GET /api/users/:id
@@ -78,7 +87,11 @@ router.post("/login", loginValidation, async (req, res) => {
 router.get("/:id", verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user);
-    res.status(200).json(user);
+    const userData = {
+      displayName: user.displayName,
+      email: user.email,
+    };
+    res.status(200).json(userData);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Somethink went wrong, please try again" });

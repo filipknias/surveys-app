@@ -6,6 +6,10 @@
   box-sizing: border-box;
 }
 
+p {
+  margin: 0;
+}
+
 a {
   color: #6c757d;
   display: block;
@@ -33,6 +37,10 @@ a:hover {
 
 .dropdown {
   align-self: center;
+}
+
+.dropdown-toggle {
+  margin: 0 !important;
 }
 
 @media screen and (max-width: 768px) {

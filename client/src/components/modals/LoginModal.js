@@ -8,43 +8,60 @@ import Alert from "react-bootstrap/Alert";
 import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 // Images
-import LoginImage from "../components/img/login-image.svg";
+import LoginImage from "../../components/img/login-image.svg";
 // Context
-import { UserContext } from "../context/UserContext";
-
+import { UserContext } from "../../context/UserContext";
+// Reducers Types
+import {
+  SET_USER,
+  SET_ERRORS,
+  CLEAR_ERRORS,
+  START_LOADING,
+  STOP_LOADING,
+} from "../../reducers/types";
 function LoginModal() {
   // Refs
   const emailRef = useRef();
   const passwordRef = useRef();
   // State
-  const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   // Context State
-  const [userState, setUserState] = useContext(UserContext);
+  const [userState, dispatch] = useContext(UserContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch({ type: START_LOADING });
     axios
       .post("/api/users/login", {
         email: emailRef.current.value,
         password: passwordRef.current.value,
       })
       .then((res) => {
+        // Set token
         axios.defaults.headers.common["auth-token"] = res.data.token;
         localStorage.setItem("auth-token", res.data.token);
         setOpen(false);
-        setUserState({
-          isAuth: true,
-          user: res.data.user,
+        // Set user
+        dispatch({
+          type: SET_USER,
+          payload: res.data.user,
         });
-        setError(null);
-        setLoading(false);
+        // Clear errors
+        dispatch({
+          type: CLEAR_ERRORS,
+          payload: { general: null },
+        });
+        // Stop loading
+        dispatch({ type: STOP_LOADING });
       })
       .catch((err) => {
-        setError(err.response.data.errors);
-        setLoading(false);
+        // Set errors
+        dispatch({
+          type: SET_ERRORS,
+          payload: { general: err.response.data.errors.general },
+        });
+        // Stop loading
+        dispatch({ type: STOP_LOADING });
       });
   };
 
@@ -55,7 +72,9 @@ function LoginModal() {
       </Button>
       <Modal
         show={open}
-        onShow={() => setError(null)}
+        onShow={() =>
+          dispatch({ type: CLEAR_ERRORS, payload: { general: null } })
+        }
         onHide={() => setOpen(false)}
       >
         <Modal.Header className="flex-column">
@@ -68,46 +87,46 @@ function LoginModal() {
             <h2>Log In to your account</h2>
           </Modal.Title>
         </Modal.Header>
-        {error && error.general && (
-          <Alert variant="danger">{error.general}</Alert>
+        {userState.errors && userState.errors.general && (
+          <Alert variant="danger">{userState.errors.general}</Alert>
         )}
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group>
-              <Form.Label>Email address</Form.Label>
+              <Form.Label htmlFor="email">Email address</Form.Label>
               <Form.Control
-                isInvalid={error && error.email ? true : false}
+                isInvalid={userState.errors && userState.errors.email}
                 type="email"
+                id="email"
                 placeholder="Your email..."
-                name="email"
                 ref={emailRef}
                 required
               />
-              {error && error.email && (
+              {userState.errors && userState.errors.email && (
                 <Form.Control.Feedback type="invalid">
-                  {error.email}
+                  {userState.errors.email}
                 </Form.Control.Feedback>
               )}
             </Form.Group>
             <Form.Group>
-              <Form.Label>Password</Form.Label>
+              <Form.Label htmlFor="password">Password</Form.Label>
               <Form.Control
-                isInvalid={error && error.password ? true : false}
+                isInvalid={userState.errors && userState.errors.password}
                 type="password"
+                id="password"
                 placeholder="Your password..."
-                name="password"
                 ref={passwordRef}
                 required
               />
-              {error && error.password && (
+              {userState.errors && userState.errors.password && (
                 <Form.Control.Feedback type="invalid">
-                  {error.password}
+                  {userState.errors.password}
                 </Form.Control.Feedback>
               )}
             </Form.Group>
             <div className="mt-4 mb-3">
               <Button type="submit" variant="primary">
-                {loading ? (
+                {userState.loading ? (
                   <Spinner animation="border" />
                 ) : (
                   <span>Sign In</span>

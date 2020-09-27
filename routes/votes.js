@@ -12,6 +12,9 @@ router.post("/:surveyId", async (req, res) => {
     survey: req.params.surveyId,
     answer: req.body.answer,
   });
+  if (req.body.name) {
+    vote.name = req.body.name;
+  }
   try {
     const survey = await Survey.findById(req.params.surveyId);
     if (survey.status === "closed") {

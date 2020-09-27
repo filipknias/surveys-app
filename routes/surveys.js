@@ -15,6 +15,7 @@ router.post("/create", verifyToken, async (req, res) => {
     answers: req.body.answers,
     author: req.user,
     status: req.body.status,
+    expirationDate: req.body.expirationDate,
   });
 
   // Set survey description if there is any
@@ -54,6 +55,13 @@ router.get("/get", async (req, res) => {
 router.get("/get/:id", async (req, res) => {
   try {
     const survey = await Survey.findById(req.params.id);
+    // Check expiration date of survey
+    if (
+      survey.expirationDate &&
+      Date.now() > Date.parse(survey.expirationDate)
+    ) {
+      return res.status(400).json({ error: "Survey is closed." });
+    }
     return res.status(200).json(survey);
   } catch (err) {
     console.error(err);

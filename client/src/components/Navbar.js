@@ -9,18 +9,20 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 // Components
-import LoginModal from "./LoginModal";
-import RegisterModal from "./RegisterModal";
+import LoginModal from "./modals/LoginModal";
+import RegisterModal from "./modals/RegisterModal";
 // Images
 import ProfileIcon from "./img/profile-icon.svg";
 import AccountDropdownIcon from "./img/account-dropdown-icon.svg";
 import LogoutDropdownIcon from "./img/logout-dropdown-icon.svg";
 // Context
 import { UserContext } from "../context/UserContext";
+// Reducer Types
+import { SET_USER, CLEAR_USER } from "../reducers/types";
 
 function NavbarComponent() {
   const [open, setOpen] = useState(false);
-  const [userState, setUserState] = useContext(UserContext);
+  const [userState, dispatch] = useContext(UserContext);
 
   // Check localStorage for user token
   useEffect(() => {
@@ -28,41 +30,32 @@ function NavbarComponent() {
     if (token) {
       const decodedToken = jwtDecode(token);
       if (decodedToken.exp * 1000 < Date.now()) {
-        setUserState({
-          isAuth: false,
-          user: {},
-        });
+        dispatch({ CLEAR_USER });
+        localStorage.removeItem("auth-token");
       } else {
         axios.defaults.headers.common["auth-token"] = token;
         axios
           .get(`/api/users/${decodedToken._id}`)
           .then((res) => {
-            setUserState({
-              isAuth: true,
-              user: res.data,
+            dispatch({
+              type: SET_USER,
+              payload: res.data,
             });
           })
-          .catch((err) => {
-            console.log(err);
-            setUserState({
-              isAuth: false,
-              user: {},
-            });
+          .catch(() => {
+            dispatch({ CLEAR_USER });
           });
       }
     }
   }, []);
 
   const handleLogout = () => {
-    setUserState({
-      isAuth: false,
-      user: {},
-    });
+    dispatch({ type: CLEAR_USER });
     localStorage.removeItem("auth-token");
   };
 
   return (
-    <Navbar expand="md" bg="light" expanded={open}>
+    <Navbar expand="md" bg="light" expanded={open} sticky="top">
       <Navbar.Brand onClick={() => setOpen(false)}>
         <Link to="/">
           mySurveys<span className="green-text">.com</span>
@@ -93,9 +86,9 @@ function NavbarComponent() {
                   height="60"
                   className="d-block ml-auto mr-auto mt-1"
                 />
-                <h3 className="text-center mt-1 mb-0 px-2">
+                <h4 className="text-center mt-1 mb-0 px-2">
                   {userState.user.displayName}
-                </h3>
+                </h4>
                 <p className="text-muted text-center px-2">
                   {userState.user.email}
                 </p>

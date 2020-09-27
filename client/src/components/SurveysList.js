@@ -13,7 +13,7 @@ function SurveysList({ surveys, loading }) {
       {loading && <Spinner animation="border" className="m-auto d-block" />}
       <ListGroup>
         {surveys.map((survey) => (
-          <Link to={`/surveys/${survey._id}`} key={survey._id}>
+          <Link to={`/surveys/${survey._id}/vote`} key={survey._id}>
             <ListGroup.Item className="d-flex">
               <Image height="50" src={PieChart} />
               <div className="ml-4">

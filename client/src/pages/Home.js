@@ -25,7 +25,7 @@ function Home() {
   }, []);
 
   return (
-    <Card className="mt-5" border="dark">
+    <Card border="dark">
       <Card.Header className="text-center py-3">
         <h4 className="mb-0">
           Welcome on mySurveys<span className="green-text">.com</span>
