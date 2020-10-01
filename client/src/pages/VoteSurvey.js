@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 // Bootstrap
 import Alert from "react-bootstrap/Alert";
@@ -7,6 +7,8 @@ import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
 // Context
 import { UserContext } from "../context/UserContext";
 // Images
@@ -23,6 +25,9 @@ export default function VoteSurvey(props) {
   const [surveyAuthor, setSurveyAuthor] = useState({});
   const [answers, setAnswers] = useState([]);
   const [expirationDate, setExpirationDate] = useState(null);
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
+  // Refs
+  const shareSurveyRef = useRef();
   // Context
   const [userState] = useContext(UserContext);
 
@@ -96,6 +101,7 @@ export default function VoteSurvey(props) {
     const answersValues = checkedAnswers.map((answer) => {
       return answer.value;
     });
+
     axios
       .post(`/api/votes/${survey._id}`, { answers: answersValues })
       .then((res) => {
@@ -144,6 +150,35 @@ export default function VoteSurvey(props) {
     const dateString = new Date(date).toLocaleString();
     const formattedDate = dateString.substr(0, dateString.length - 3);
     return formattedDate;
+  };
+
+  // Share survey popover
+  const shareSurveyPopover = () => {
+    const historyPrefix = "localhost:3000";
+    return (
+      <Popover id="share-survey-popover">
+        <Popover.Title className="text-center">Share your survey</Popover.Title>
+        <Popover.Content className="d-flex">
+          <Form.Control
+            type="text"
+            readOnly
+            value={historyPrefix + props.history.location.pathname}
+            ref={shareSurveyRef}
+          />
+          <Button variant="primary" className="ml-3" onClick={handleCopyLink}>
+            {copiedToClipboard ? "Copied" : "Copy"}
+          </Button>
+        </Popover.Content>
+      </Popover>
+    );
+  };
+
+  // Copy link to clipboard
+  const handleCopyLink = () => {
+    shareSurveyRef.current.select();
+    shareSurveyRef.current.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    setCopiedToClipboard(true);
   };
 
   return (
@@ -199,7 +234,7 @@ export default function VoteSurvey(props) {
                       />
                     </Form.Group>
                   ))}
-                <div className="d-flex flex-column flex-md-row     justify-content-between mt-5">
+                <div className="d-flex flex-column flex-md-row justify-content-between mt-5">
                   <Button
                     type="submit"
                     variant="primary"
@@ -213,10 +248,21 @@ export default function VoteSurvey(props) {
                       <Image src={ResultsIcon} height="18" className="mr-2" />
                       Results
                     </Button>
-                    <Button type="button" variant="secondary" className="px-5">
-                      <Image src={ShareIcon} height="18" className="mr-2" />
-                      Share
-                    </Button>
+                    <OverlayTrigger
+                      trigger="click"
+                      placement="bottom"
+                      overlay={shareSurveyPopover()}
+                      onToggle={() => setCopiedToClipboard(false)}
+                    >
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="px-5"
+                      >
+                        <Image src={ShareIcon} height="18" className="mr-2" />
+                        Share
+                      </Button>
+                    </OverlayTrigger>
                   </div>
                 </div>
               </Form>
