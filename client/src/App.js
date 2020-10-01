@@ -10,10 +10,12 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import CreateSurvey from "./pages/CreateSurvey";
-import SurveyPage from "./pages/VoteSurvey";
+import VoteSurvey from "./pages/VoteSurvey";
+import ResultsSurvey from "./pages/ResultsSurvey";
 // Context
 import { UserProvider } from "./context/UserContext";
 import { FormProvider } from "./context/FormContext";
+import { SurveyProvider } from "./context/SurveyContext";
 
 function App() {
   return (
@@ -24,11 +26,17 @@ function App() {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route path="/explore" component={Explore} />
-            <Route path="/surveys/:surveyId/vote" component={SurveyPage} />
-            <FormProvider>
-              <Route path="/create" component={CreateSurvey} />
-            </FormProvider>
           </Switch>
+          <SurveyProvider>
+            <Route path="/surveys/:surveyId/vote" component={VoteSurvey} />
+            <Route
+              path="/surveys/:surveyId/results"
+              component={ResultsSurvey}
+            />
+          </SurveyProvider>
+          <FormProvider>
+            <Route path="/create" component={CreateSurvey} />
+          </FormProvider>
         </Container>
       </Router>
     </UserProvider>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 // Bootstrap
 import Alert from "react-bootstrap/Alert";
@@ -11,81 +12,96 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 // Context
 import { UserContext } from "../context/UserContext";
+import { SurveyContext } from "../context/SurveyContext";
 // Images
 import EditIcon from "../components/img/edit-icon.svg";
 import ResultsIcon from "../components/img/results-icon.svg";
 import ShareIcon from "../components/img/share-icon.svg";
+// Reducer Types
+import {
+  SET_VALUES,
+  SET_VALID,
+  SET_INVALID,
+  START_LOADING,
+  STOP_LOADING,
+} from "../reducers/types";
 
 export default function VoteSurvey(props) {
   // State
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [valid, setValid] = useState(false);
-  const [survey, setSurvey] = useState({});
-  const [surveyAuthor, setSurveyAuthor] = useState({});
-  const [answers, setAnswers] = useState([]);
-  const [expirationDate, setExpirationDate] = useState(null);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   // Refs
   const shareSurveyRef = useRef();
   // Context
   const [userState] = useContext(UserContext);
+  const [surveyState, dispatch] = useContext(SurveyContext);
 
-  const surveyDate = new Date(survey.createdAt);
+  const surveyDate = new Date(surveyState.survey.createdAt);
   const formattedDate = surveyDate.toDateString().substr(3, surveyDate.length);
 
   // Set survey
   useEffect(() => {
     // Start loading
-    setLoading(true);
+    dispatch({ type: START_LOADING });
     const surveyId = props.match.params.surveyId;
     axios
       .get(`/api/surveys/get/${surveyId}`)
       .then((res) => {
         // Set survey
-        setSurvey(res.data);
-        // Set survey author state
+        dispatch({
+          type: SET_VALUES,
+          payload: { survey: res.data },
+        });
+        // Set survey author
         getSurveyAuthor(res.data.author);
         // Set formatted expiration date
         if (res.data.expirationDate) {
-          setExpirationDate(formatDate(res.data.expirationDate));
+          dispatch({
+            type: SET_VALUES,
+            payload: { expirationDate: formatDate(res.data.expirationDate) },
+          });
         }
-        // Set answers state
+        // Set answers
         const answersState = res.data.answers.map((answer) => {
           return {
             ...answer,
             checked: false,
           };
         });
-        setAnswers(answersState);
+        dispatch({
+          type: SET_VALUES,
+          payload: { answers: answersState },
+        });
         // Stop loading
-        setLoading(false);
+        dispatch({ type: STOP_LOADING });
       })
       .catch(() => {
         props.history.push("/");
         // Stop loading
-        setLoading(false);
+        dispatch({ type: STOP_LOADING });
       });
   }, []);
 
   // Answers validation
   useEffect(() => {
-    const checkedAnswers = answers.filter((answer) => {
+    const checkedAnswers = surveyState.answers.filter((answer) => {
       return answer.checked === true;
     });
     if (checkedAnswers.length < 1) {
-      setValid(false);
+      dispatch({ type: SET_INVALID });
     } else {
-      setValid(true);
+      dispatch({ type: SET_VALID });
     }
-  }, [answers]);
+  }, [surveyState.answers]);
 
   // Get survey author data
   const getSurveyAuthor = (authorId) => {
     axios
       .get(`/api/users/${authorId}`)
       .then((res) => {
-        setSurveyAuthor(res.data);
+        dispatch({
+          type: SET_VALUES,
+          payload: { surveyAuthor: res.data },
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -95,7 +111,7 @@ export default function VoteSurvey(props) {
   // Submit vote
   const handleSubmit = (e) => {
     e.preventDefault();
-    const checkedAnswers = answers.filter((answer) => {
+    const checkedAnswers = surveyState.answers.filter((answer) => {
       return answer.checked === true;
     });
     const answersValues = checkedAnswers.map((answer) => {
@@ -103,20 +119,23 @@ export default function VoteSurvey(props) {
     });
 
     axios
-      .post(`/api/votes/${survey._id}`, { answers: answersValues })
+      .post(`/api/votes/${surveyState.survey._id}`, { answers: answersValues })
       .then((res) => {
         console.log(res.data);
       })
       .catch((err) => {
-        setError(err.response.data);
+        dispatch({
+          type: SET_VALUES,
+          payload: { error: err.response.data },
+        });
       });
   };
 
   // Answers change state update
   const handleAnswerChange = (answerId) => {
-    const updatedAnswers = answers.map((answer) => {
+    const updatedAnswers = surveyState.answers.map((answer) => {
       if (answer.id === answerId) {
-        if (survey.multipleAnswers) {
+        if (surveyState.survey.multipleAnswers) {
           // Multiple answer
           return {
             ...answer,
@@ -130,7 +149,7 @@ export default function VoteSurvey(props) {
           };
         }
       } else {
-        if (survey.multipleAnswers) {
+        if (surveyState.survey.multipleAnswers) {
           // Multiple answer
           return answer;
         } else {
@@ -142,7 +161,10 @@ export default function VoteSurvey(props) {
         }
       }
     });
-    setAnswers(updatedAnswers);
+    dispatch({
+      type: SET_VALUES,
+      payload: { answers: updatedAnswers },
+    });
   };
 
   // Format expiration date
@@ -183,10 +205,10 @@ export default function VoteSurvey(props) {
 
   return (
     <>
-      {error && (
+      {surveyState.error && (
         <Alert variant="danger">
           <Alert.Heading>Somethink went wrong...</Alert.Heading>
-          <p>{error}</p>
+          <p>{surveyState.error}</p>
         </Alert>
       )}
       <Card border="dark">
@@ -195,38 +217,43 @@ export default function VoteSurvey(props) {
             Make a <span className="green-text">Vote</span>
           </h4>
         </Card.Header>
-        <Card.Body className="px-4">
-          {loading ? (
+        <Card.Body className="px-md-4">
+          {surveyState.loading ? (
             <Spinner animation="border" className="m-auto d-block" />
           ) : (
             <>
               <div className="d-flex justify-content-between">
                 <div>
-                  <Card.Title>{survey.title}</Card.Title>
+                  <Card.Title>{surveyState.survey.title}</Card.Title>
                   <Card.Subtitle className="text-muted">
-                    {formattedDate} - by {surveyAuthor.displayName}
+                    {formattedDate} - by {surveyState.surveyAuthor.displayName}
                   </Card.Subtitle>
                 </div>
-                {userState.isAuth && survey.author === userState.user._id && (
-                  <Button variant="secondary">
-                    <Image src={EditIcon} height="14" className="mr-2" />
-                    Edit
-                  </Button>
-                )}
+                {userState.isAuth &&
+                  surveyState.survey.author === userState.user._id && (
+                    <Button variant="secondary">
+                      <Image src={EditIcon} height="14" className="mr-2" />
+                      Edit
+                    </Button>
+                  )}
               </div>
-              {expirationDate && (
+              {surveyState.expirationDate && (
                 <Alert variant="info" className="mt-3 mb-4">
                   This survey has expiration date set to:
-                  <b>{expirationDate}</b>. After this time survey will be
-                  closed.
+                  <b>{surveyState.expirationDate}</b>. After this time survey
+                  will be closed.
                 </Alert>
               )}
               <Form className="mt-4" onSubmit={handleSubmit}>
-                {answers &&
-                  answers.map((answer) => (
+                {surveyState.answers &&
+                  surveyState.answers.map((answer) => (
                     <Form.Group key={answer.id}>
                       <Form.Check
-                        type={survey.multipleAnswers ? "checkbox" : "radio"}
+                        type={
+                          surveyState.survey.multipleAnswers
+                            ? "checkbox"
+                            : "radio"
+                        }
                         label={answer.value}
                         id={answer.id}
                         checked={answer.checked}
@@ -239,15 +266,21 @@ export default function VoteSurvey(props) {
                     type="submit"
                     variant="primary"
                     className="px-5"
-                    disabled={valid ? false : true}
+                    disabled={surveyState.isValid ? false : true}
                   >
                     Vote
                   </Button>
                   <div className="d-flex justify-content-between mt-md-0 mt-3">
-                    <Button type="button" variant="info" className="mr-4 px-5">
-                      <Image src={ResultsIcon} height="18" className="mr-2" />
-                      Results
-                    </Button>
+                    <Link to={`/surveys/${surveyState.survey._id}/results`}>
+                      <Button
+                        type="button"
+                        variant="info"
+                        className="mr-4 px-5"
+                      >
+                        <Image src={ResultsIcon} height="18" className="mr-2" />
+                        Results
+                      </Button>
+                    </Link>
                     <OverlayTrigger
                       trigger="click"
                       placement="bottom"
