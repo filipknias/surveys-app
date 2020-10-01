@@ -27,6 +27,7 @@ const initialState = {
       minute: null,
       formattedDate: null,
     },
+    multipleAnswers: false,
     answers: [
       {
         id: 1,

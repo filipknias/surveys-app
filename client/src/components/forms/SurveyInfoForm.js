@@ -18,14 +18,20 @@ export default function SurveyInfoForm() {
   const [userState] = useContext(UserContext);
   const [formState, dispatch] = useContext(FormContext);
 
+  // Constants
+  const MIN_TITLE_LENGTH = 5;
+  const MAX_TITLE_LENGTH = 50;
+  const MIN_DESCRIPTION_LENGTH = 10;
+  const MAX_DESCRIPTION_LENGTH = 70;
+
   const titleValidation = () => {
     const {
       values: { title },
     } = formState;
     let error = null;
 
-    if (title.length < 5 || title.length > 30) {
-      error = "Title length must be between 5 and 30 characters.";
+    if (title.length < MIN_TITLE_LENGTH || title.length > MAX_TITLE_LENGTH) {
+      error = `Title length must be between ${MIN_TITLE_LENGTH} and ${MAX_TITLE_LENGTH} characters.`;
     }
     if (title === "") {
       error = "Title must not be empty.";
@@ -40,8 +46,11 @@ export default function SurveyInfoForm() {
     } = formState;
     let error = null;
 
-    if (description.length < 10 || description.length > 50) {
-      error = "Description length must be between 10 and 50 characters.";
+    if (
+      description.length < MIN_DESCRIPTION_LENGTH ||
+      description.length > MAX_DESCRIPTION_LENGTH
+    ) {
+      error = `Description length must be between ${MIN_DESCRIPTION_LENGTH} and ${MAX_DESCRIPTION_LENGTH} characters.`;
     }
     if (description === "") {
       error = null;
@@ -136,7 +145,7 @@ export default function SurveyInfoForm() {
           {formState.errors.title}
         </Form.Control.Feedback>
         <Form.Text className="text-muted ml-1">
-          {formState.values.title.length}/30
+          {formState.values.title.length}/{MAX_TITLE_LENGTH}
         </Form.Text>
       </Form.Group>
       <Form.Group>
@@ -155,7 +164,7 @@ export default function SurveyInfoForm() {
           {formState.errors.description}
         </Form.Control.Feedback>
         <Form.Text className="text-muted ml-1">
-          {formState.values.description.length}/50
+          {formState.values.description.length}/{MAX_DESCRIPTION_LENGTH}
         </Form.Text>
       </Form.Group>
     </>

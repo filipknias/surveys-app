@@ -9,11 +9,18 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
+import Spinner from "react-bootstrap/Spinner";
 // Context
 import { UserContext } from "../context/UserContext";
 import { FormContext } from "../context/FormContext";
 // Reducers Types
-import { NEXT_STEP, PREV_STEP, SET_ERRORS } from "../reducers/types";
+import {
+  NEXT_STEP,
+  PREV_STEP,
+  SET_ERRORS,
+  START_LOADING,
+  STOP_LOADING,
+} from "../reducers/types";
 
 export default function CreateSurvey({ history }) {
   // Context
@@ -25,6 +32,9 @@ export default function CreateSurvey({ history }) {
     // Prevent submit on prev steps
     if (formState.currentStep !== formState.steps.length) return;
 
+    // Start loading
+    dispatch({ type: START_LOADING });
+
     const { values } = formState;
     // New Survey Data
     const filledAnswers = values.answers.filter((answer) => {
@@ -35,20 +45,30 @@ export default function CreateSurvey({ history }) {
       description: values.description,
       answers: filledAnswers,
       status: values.status,
-      expirationDate: values.expirationDate.formattedDate,
+      multipleAnswers: values.multipleAnswers,
     };
+
+    // Set expiration date
+    if (values.expirationDate.date !== null) {
+      newSurveyData.expirationDate = values.expirationDate.formattedDate;
+    }
 
     // Send survey
     axios
       .post("/api/surveys/create", newSurveyData)
       .then((res) => {
+        // Redirect to survey vote page
         history.push(`/surveys/${res.data._id}/vote`);
+        // Stop loading
+        dispatch({ type: STOP_LOADING });
       })
       .catch((err) => {
         dispatch({
           type: SET_ERRORS,
           payload: { general: err.response.data },
         });
+        // Stop loading
+        dispatch({ type: STOP_LOADING });
       });
   };
 
@@ -86,11 +106,17 @@ export default function CreateSurvey({ history }) {
                 block
                 disabled={formState.isValid ? false : true}
               >
-                Save
+                {formState.loading ? (
+                  <Spinner animation="border" className="m-auto d-block" />
+                ) : (
+                  <p>Save</p>
+                )}
               </Button>
             </div>
           </>
         );
+      default:
+        return;
     }
   };
 
@@ -112,7 +138,7 @@ export default function CreateSurvey({ history }) {
             Create your own <span className="green-text">custom survey</span>
           </h4>
         </Card.Header>
-        <Card.Body className="px-5">
+        <Card.Body className="px-md-5">
           {FormHeader()}
           {formState.errors.general && (
             <Alert variant="warning">

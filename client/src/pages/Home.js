@@ -14,11 +14,11 @@ function Home() {
 
   useEffect(() => {
     setLoading(true);
-    axios.get("api/surveys/get?sort=createdAt&limit=10").then((res) => {
+    axios.get("api/surveys/get?sort=createdAt&limit=5").then((res) => {
       setLatestSurveys(res.data);
       setLoading(false);
     });
-    axios.get("api/surveys/get?sort=votesCount&limit=10").then((res) => {
+    axios.get("api/surveys/get?sort=votesCount&limit=5").then((res) => {
       setPopularSurveys(res.data);
       setLoading(false);
     });
@@ -26,8 +26,8 @@ function Home() {
 
   return (
     <Card border="dark">
-      <Card.Header className="text-center py-3">
-        <h4 className="mb-0">
+      <Card.Header className="text-center">
+        <h4 className="my-2">
           Welcome on mySurveys<span className="green-text">.com</span>
         </h4>
       </Card.Header>

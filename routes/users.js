@@ -43,6 +43,7 @@ router.post("/register", registerValidation, async (req, res) => {
     const savedUser = await newUser.save();
     const token = jwt.sign({ _id: savedUser._id }, process.env.TOKEN_SECRET);
     const userData = {
+      _id: savedUser._id,
       displayName: savedUser.displayName,
       email: savedUser.email,
     };
@@ -76,6 +77,7 @@ router.post("/login", loginValidation, async (req, res) => {
   // Successful login
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
   const userData = {
+    _id: user._id,
     displayName: user.displayName,
     email: user.email,
   };
@@ -84,10 +86,11 @@ router.post("/login", loginValidation, async (req, res) => {
 
 // GET /api/users/:id
 // Get user data
-router.get("/:id", verifyToken, async (req, res) => {
+router.get("/:userId", verifyToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.params.userId);
     const userData = {
+      _id: user._id,
       displayName: user.displayName,
       email: user.email,
     };

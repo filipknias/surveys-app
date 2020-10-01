@@ -5,12 +5,12 @@ const surveySchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 5,
-    maxlength: 30,
+    maxlength: 50,
   },
   description: {
     type: String,
     minlength: 10,
-    maxlength: 50,
+    maxlength: 70,
   },
   answers: {
     type: Array,
@@ -38,6 +38,11 @@ const surveySchema = new mongoose.Schema({
   },
   expirationDate: {
     type: Date,
+    default: null,
+  },
+  multipleAnswers: {
+    type: Boolean,
+    required: true,
   },
 });
 

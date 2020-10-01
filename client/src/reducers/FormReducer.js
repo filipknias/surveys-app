@@ -6,6 +6,8 @@ import {
   SET_INVALID,
   NEXT_STEP,
   PREV_STEP,
+  START_LOADING,
+  STOP_LOADING,
 } from "./types";
 
 export default function FormReducer(state, action) {
@@ -57,6 +59,16 @@ export default function FormReducer(state, action) {
         ...state,
         currentStep: state.currentStep - 1,
         isValid: true,
+      };
+    case START_LOADING:
+      return {
+        ...state,
+        loading: true,
+      };
+    case STOP_LOADING:
+      return {
+        ...state,
+        loading: false,
       };
     default:
       return state;

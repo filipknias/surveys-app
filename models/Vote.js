@@ -6,9 +6,8 @@ const userSchema = new mongoose.Schema({
     required: true,
     ref: "Survey",
   },
-  answer: {
-    type: String,
-    required: true,
+  answers: {
+    type: Array,
   },
 });
 

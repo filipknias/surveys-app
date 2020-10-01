@@ -73,6 +73,7 @@ export default function SurveyOptionsForm() {
           },
         },
       });
+      // Clear errors
       dispatch({
         type: CLEAR_ERRORS,
         payload: { expirationDate: null },
@@ -82,6 +83,8 @@ export default function SurveyOptionsForm() {
 
   // Expiration Date Validation
   useEffect(() => {
+    if (formState.values.expirationDate.date === null) return;
+
     const dateNow = Date.now();
     const expirationDate = Date.parse(
       formState.values.expirationDate.formattedDate
@@ -119,6 +122,9 @@ export default function SurveyOptionsForm() {
     const {
       values: { expirationDate },
     } = formState;
+
+    if (expirationDate.date === null) return;
+
     const date = new Date(expirationDate.date);
     const formattedDate = new Date(
       date.getFullYear(),
@@ -188,6 +194,13 @@ export default function SurveyOptionsForm() {
     });
   };
 
+  const handleMultipleAnswers = () => {
+    dispatch({
+      type: SET_VALUES,
+      payload: { multipleAnswers: !formState.values.multipleAnswers },
+    });
+  };
+
   return (
     <>
       {expirationDate && formState.errors.expirationDate && (
@@ -251,7 +264,7 @@ export default function SurveyOptionsForm() {
                       ? formState.values.expirationDate.minute
                       : ""
                   }
-                  min="1"
+                  min="0"
                   max="59"
                   onChange={(e) => handleMinuteChange(e)}
                 />
@@ -259,6 +272,15 @@ export default function SurveyOptionsForm() {
             </div>
           </>
         )}
+      </Form.Group>
+      <Form.Group>
+        <Form.Check
+          type="checkbox"
+          label="Allow multiple answers"
+          id="multiple-answers"
+          checked={formState.values.multipleAnswers}
+          onChange={handleMultipleAnswers}
+        />
       </Form.Group>
     </>
   );

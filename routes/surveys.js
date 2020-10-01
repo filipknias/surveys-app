@@ -15,12 +15,17 @@ router.post("/create", verifyToken, async (req, res) => {
     answers: req.body.answers,
     author: req.user,
     status: req.body.status,
-    expirationDate: req.body.expirationDate,
+    multipleAnswers: req.body.multipleAnswers,
   });
 
   // Set survey description if there is any
   if (req.body.description !== "") {
     survey.description = req.body.description;
+  }
+
+  // Set expiration date if there is any
+  if (req.body.expirationDate) {
+    survey.expirationDate = req.body.expirationDate;
   }
 
   // Try save survey in DB
@@ -38,9 +43,13 @@ router.post("/create", verifyToken, async (req, res) => {
 router.get("/get", async (req, res) => {
   const limit = parseInt(req.query.limit) || 20;
   try {
-    const survey = await Survey.find({ status: "public" })
+    const survey = await Survey.find({
+      status: "public",
+      expirationDate: null,
+    })
       .sort({ [req.query.sort]: -1 })
       .limit(limit);
+
     return res.status(200).json(survey);
   } catch (err) {
     console.error(err);
