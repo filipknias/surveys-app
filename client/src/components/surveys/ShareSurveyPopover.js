@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 // Images
-import ShareIcon from "../components/img/share-icon.svg";
+import ShareIcon from "../img/share-icon.svg";
 
 export default function ShareSurveyPopover() {
   // State

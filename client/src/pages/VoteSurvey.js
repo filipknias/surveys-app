@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 // Components
-import SurveyHeader from "../components/SurveyHeader";
-import ShareSurveyPopover from "../components/ShareSurveyPopover";
+import SurveyHeader from "../components/surveys/SurveyHeader";
+import ShareSurveyPopover from "../components/surveys/ShareSurveyPopover";
 // Bootstrap
 import Alert from "react-bootstrap/Alert";
 import Form from "react-bootstrap/Form";
@@ -84,9 +84,11 @@ export default function VoteSurvey(props) {
   // Submit vote
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Get checked answers values
     const checkedAnswers = surveyState.answers.filter((answer) => {
       return answer.checked === true;
     });
+    // Format checked array to only values array
     const answersValues = checkedAnswers.map((answer) => {
       return answer.value;
     });

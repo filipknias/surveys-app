@@ -5,7 +5,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import Spinner from "react-bootstrap/Spinner";
 // Images
-import PieChart from "./img/pie-chart.svg";
+import PieChart from "../img/pie-chart.svg";
 
 function SurveysList({ surveys, loading }) {
   return (

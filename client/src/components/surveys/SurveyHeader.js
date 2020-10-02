@@ -6,10 +6,10 @@ import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 import Alert from "react-bootstrap/Alert";
 // Context
-import { UserContext } from "../context/UserContext";
-import { SurveyContext } from "../context/SurveyContext";
+import { UserContext } from "../../context/UserContext";
+import { SurveyContext } from "../../context/SurveyContext";
 // Images
-import EditIcon from "../components/img/edit-icon.svg";
+import EditIcon from "../img/edit-icon.svg";
 
 export default function SurveyHeader() {
   // Context

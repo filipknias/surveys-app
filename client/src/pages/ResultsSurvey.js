@@ -2,8 +2,8 @@ import React, { useEffect, useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 // Components
-import SurveyHeader from "../components/SurveyHeader";
-import ShareSurveyPopover from "../components/ShareSurveyPopover";
+import SurveyHeader from "../components/surveys/SurveyHeader";
+import ShareSurveyPopover from "../components/surveys/ShareSurveyPopover";
 // Bootstrap
 import Image from "react-bootstrap/Image";
 import Card from "react-bootstrap/Card";
