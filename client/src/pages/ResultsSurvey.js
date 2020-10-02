@@ -1,5 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import axios from "axios";
+// Components
+import SurveyHeader from "../components/SurveyHeader";
 // Bootstrap
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
@@ -93,7 +95,13 @@ export default function ResultsSurvey(props) {
             See <span className="green-text">Results</span>
           </h4>
         </Card.Header>
-        <Card.Body></Card.Body>
+        <Card.Body>
+          <SurveyHeader />
+
+          {surveyState.answers.map((answer) => (
+            <h1>{answer.value}</h1>
+          ))}
+        </Card.Body>
       </Card>
     </>
   );
