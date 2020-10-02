@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import axios from "axios";
 // Components
 import SurveyHeader from "../components/SurveyHeader";
@@ -7,7 +7,6 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 // Context
-import { UserContext } from "../context/UserContext";
 import { SurveyContext } from "../context/SurveyContext";
 // Reducer Types
 import {
@@ -19,7 +18,10 @@ import {
 } from "../reducers/types";
 
 export default function ResultsSurvey(props) {
+  // Context
   const [surveyState, dispatch] = useContext(SurveyContext);
+  // State
+  const [votes, setVotes] = useState([]);
 
   // Set survey
   useEffect(() => {
@@ -54,6 +56,12 @@ export default function ResultsSurvey(props) {
       });
   }, []);
 
+  // Set votes
+  useEffect(() => {
+    if (Object.keys(surveyState.survey).length === 0) return;
+    console.log(surveyState.survey);
+  }, [surveyState.survey]);
+
   return (
     <>
       <Card border="dark">
@@ -67,7 +75,10 @@ export default function ResultsSurvey(props) {
             <Spinner animation="border" className="m-auto d-block" />
           ) : (
             <>
-              <SurveyHeader survey={surveyState.survey} />
+              <SurveyHeader />
+              {surveyState.answers.map((answer) => (
+                <h1>{answer.value}</h1>
+              ))}
             </>
           )}
         </Card.Body>

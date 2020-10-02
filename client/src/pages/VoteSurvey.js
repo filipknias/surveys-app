@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 // Components
 import SurveyHeader from "../components/SurveyHeader";
+import ShareSurveyPopover from "../components/ShareSurveyPopover";
 // Bootstrap
 import Alert from "react-bootstrap/Alert";
 import Form from "react-bootstrap/Form";
@@ -10,14 +11,10 @@ import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Popover from "react-bootstrap/Popover";
 // Context
 import { SurveyContext } from "../context/SurveyContext";
 // Images
-import EditIcon from "../components/img/edit-icon.svg";
 import ResultsIcon from "../components/img/results-icon.svg";
-import ShareIcon from "../components/img/share-icon.svg";
 // Reducer Types
 import {
   SET_VALUES,
@@ -28,10 +25,7 @@ import {
 } from "../reducers/types";
 
 export default function VoteSurvey(props) {
-  // State
-  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
-  // Refs
-  const shareSurveyRef = useRef();
+  // Context
   const [surveyState, dispatch] = useContext(SurveyContext);
 
   // Set survey
@@ -146,35 +140,6 @@ export default function VoteSurvey(props) {
     });
   };
 
-  // Share survey popover
-  const shareSurveyPopover = () => {
-    const historyPrefix = "localhost:3000";
-    return (
-      <Popover id="share-survey-popover">
-        <Popover.Title className="text-center">Share your survey</Popover.Title>
-        <Popover.Content className="d-flex">
-          <Form.Control
-            type="text"
-            readOnly
-            value={historyPrefix + props.history.location.pathname}
-            ref={shareSurveyRef}
-          />
-          <Button variant="primary" className="ml-3" onClick={handleCopyLink}>
-            {copiedToClipboard ? "Copied" : "Copy"}
-          </Button>
-        </Popover.Content>
-      </Popover>
-    );
-  };
-
-  // Copy link to clipboard
-  const handleCopyLink = () => {
-    shareSurveyRef.current.select();
-    shareSurveyRef.current.setSelectionRange(0, 99999);
-    document.execCommand("copy");
-    setCopiedToClipboard(true);
-  };
-
   return (
     <>
       {surveyState.error && (
@@ -194,7 +159,7 @@ export default function VoteSurvey(props) {
             <Spinner animation="border" className="m-auto d-block" />
           ) : (
             <>
-              <SurveyHeader survey={surveyState.survey} />
+              <SurveyHeader />
               <Form className="mt-4" onSubmit={handleSubmit}>
                 {surveyState.answers &&
                   surveyState.answers.map((answer) => (
@@ -232,21 +197,7 @@ export default function VoteSurvey(props) {
                         Results
                       </Button>
                     </Link>
-                    <OverlayTrigger
-                      trigger="click"
-                      placement="bottom"
-                      overlay={shareSurveyPopover()}
-                      onToggle={() => setCopiedToClipboard(false)}
-                    >
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        className="px-5"
-                      >
-                        <Image src={ShareIcon} height="18" className="mr-2" />
-                        Share
-                      </Button>
-                    </OverlayTrigger>
+                    <ShareSurveyPopover history={props.history} />
                   </div>
                 </div>
               </Form>
