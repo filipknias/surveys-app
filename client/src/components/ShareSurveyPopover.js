@@ -8,7 +8,7 @@ import Popover from "react-bootstrap/Popover";
 // Images
 import ShareIcon from "../components/img/share-icon.svg";
 
-export default function ShareSurveyPopover({ history }) {
+export default function ShareSurveyPopover() {
   // State
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   // Refs
@@ -16,7 +16,6 @@ export default function ShareSurveyPopover({ history }) {
 
   // Share survey popover
   const shareSurveyPopover = () => {
-    const historyPrefix = "localhost:3000";
     return (
       <Popover id="share-survey-popover">
         <Popover.Title className="text-center">Share your survey</Popover.Title>
@@ -24,7 +23,7 @@ export default function ShareSurveyPopover({ history }) {
           <Form.Control
             type="text"
             readOnly
-            value={historyPrefix + history.location.pathname}
+            value={window.location.href}
             ref={shareSurveyRef}
           />
           <Button variant="primary" className="ml-3" onClick={handleCopyLink}>

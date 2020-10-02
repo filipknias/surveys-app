@@ -4,8 +4,8 @@ import SurveyReducer from "../reducers/SurveyReducer";
 const initialState = {
   survey: {},
   answers: [],
-  isValid: false,
   error: null,
+  isValid: false,
   loading: false,
 };
 export const SurveyContext = createContext([initialState, () => {}]);

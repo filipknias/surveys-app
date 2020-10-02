@@ -41,7 +41,7 @@ export default function VoteSurvey(props) {
           type: SET_VALUES,
           payload: { survey: res.data },
         });
-        // Set formatted expiration date
+        // Set expiration date
         if (res.data.expirationDate) {
           dispatch({
             type: SET_VALUES,
@@ -93,8 +93,8 @@ export default function VoteSurvey(props) {
 
     axios
       .post(`/api/votes/${surveyState.survey._id}`, { answers: answersValues })
-      .then((res) => {
-        console.log(res.data);
+      .then(() => {
+        props.history.push(`/surveys/${surveyState.survey._id}/results`);
       })
       .catch((err) => {
         dispatch({
