@@ -3,9 +3,7 @@ import SurveyReducer from "../reducers/SurveyReducer";
 
 const initialState = {
   survey: {},
-  surveyAuthor: {},
   answers: [],
-  expirationDate: null,
   isValid: false,
   error: null,
   loading: false,

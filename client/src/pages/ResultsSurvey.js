@@ -19,8 +19,6 @@ import {
 } from "../reducers/types";
 
 export default function ResultsSurvey(props) {
-  // Context
-  const [userState] = useContext(UserContext);
   const [surveyState, dispatch] = useContext(SurveyContext);
 
   // Set survey
@@ -36,15 +34,6 @@ export default function ResultsSurvey(props) {
           type: SET_VALUES,
           payload: { survey: res.data },
         });
-        // Set survey author
-        getSurveyAuthor(res.data.author);
-        // Set formatted expiration date
-        if (res.data.expirationDate) {
-          dispatch({
-            type: SET_VALUES,
-            payload: { expirationDate: formatDate(res.data.expirationDate) },
-          });
-        }
         // Set answers
         const answersState = res.data.answers.map((answer) => {
           return {
@@ -65,28 +54,6 @@ export default function ResultsSurvey(props) {
       });
   }, []);
 
-  // Get survey author data
-  const getSurveyAuthor = (authorId) => {
-    axios
-      .get(`/api/users/${authorId}`)
-      .then((res) => {
-        dispatch({
-          type: SET_VALUES,
-          payload: { surveyAuthor: res.data },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  // Format expiration date
-  const formatDate = (date) => {
-    const dateString = new Date(date).toLocaleString();
-    const formattedDate = dateString.substr(0, dateString.length - 3);
-    return formattedDate;
-  };
-
   return (
     <>
       <Card border="dark">
@@ -96,11 +63,13 @@ export default function ResultsSurvey(props) {
           </h4>
         </Card.Header>
         <Card.Body>
-          <SurveyHeader />
-
-          {surveyState.answers.map((answer) => (
-            <h1>{answer.value}</h1>
-          ))}
+          {surveyState.loading ? (
+            <Spinner animation="border" className="m-auto d-block" />
+          ) : (
+            <>
+              <SurveyHeader survey={surveyState.survey} />
+            </>
+          )}
         </Card.Body>
       </Card>
     </>

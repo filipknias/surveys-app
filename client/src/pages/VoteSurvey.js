@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+// Components
+import SurveyHeader from "../components/SurveyHeader";
 // Bootstrap
 import Alert from "react-bootstrap/Alert";
 import Form from "react-bootstrap/Form";
@@ -11,7 +13,6 @@ import Spinner from "react-bootstrap/Spinner";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 // Context
-import { UserContext } from "../context/UserContext";
 import { SurveyContext } from "../context/SurveyContext";
 // Images
 import EditIcon from "../components/img/edit-icon.svg";
@@ -31,12 +32,7 @@ export default function VoteSurvey(props) {
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   // Refs
   const shareSurveyRef = useRef();
-  // Context
-  const [userState] = useContext(UserContext);
   const [surveyState, dispatch] = useContext(SurveyContext);
-
-  const surveyDate = new Date(surveyState.survey.createdAt);
-  const formattedDate = surveyDate.toDateString().substr(3, surveyDate.length);
 
   // Set survey
   useEffect(() => {
@@ -51,13 +47,11 @@ export default function VoteSurvey(props) {
           type: SET_VALUES,
           payload: { survey: res.data },
         });
-        // Set survey author
-        getSurveyAuthor(res.data.author);
         // Set formatted expiration date
         if (res.data.expirationDate) {
           dispatch({
             type: SET_VALUES,
-            payload: { expirationDate: formatDate(res.data.expirationDate) },
+            payload: { expirationDate: res.data.expirationDate },
           });
         }
         // Set answers
@@ -92,21 +86,6 @@ export default function VoteSurvey(props) {
       dispatch({ type: SET_VALID });
     }
   }, [surveyState.answers]);
-
-  // Get survey author data
-  const getSurveyAuthor = (authorId) => {
-    axios
-      .get(`/api/users/${authorId}`)
-      .then((res) => {
-        dispatch({
-          type: SET_VALUES,
-          payload: { surveyAuthor: res.data },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
 
   // Submit vote
   const handleSubmit = (e) => {
@@ -167,13 +146,6 @@ export default function VoteSurvey(props) {
     });
   };
 
-  // Format expiration date
-  const formatDate = (date) => {
-    const dateString = new Date(date).toLocaleString();
-    const formattedDate = dateString.substr(0, dateString.length - 3);
-    return formattedDate;
-  };
-
   // Share survey popover
   const shareSurveyPopover = () => {
     const historyPrefix = "localhost:3000";
@@ -222,28 +194,7 @@ export default function VoteSurvey(props) {
             <Spinner animation="border" className="m-auto d-block" />
           ) : (
             <>
-              <div className="d-flex justify-content-between">
-                <div>
-                  <Card.Title>{surveyState.survey.title}</Card.Title>
-                  <Card.Subtitle className="text-muted">
-                    {formattedDate} - by {surveyState.surveyAuthor.displayName}
-                  </Card.Subtitle>
-                </div>
-                {userState.isAuth &&
-                  surveyState.survey.author === userState.user._id && (
-                    <Button variant="secondary">
-                      <Image src={EditIcon} height="14" className="mr-2" />
-                      Edit
-                    </Button>
-                  )}
-              </div>
-              {surveyState.expirationDate && (
-                <Alert variant="info" className="mt-3 mb-4">
-                  This survey has expiration date set to:
-                  <b>{surveyState.expirationDate}</b>. After this time survey
-                  will be closed.
-                </Alert>
-              )}
+              <SurveyHeader survey={surveyState.survey} />
               <Form className="mt-4" onSubmit={handleSubmit}>
                 {surveyState.answers &&
                   surveyState.answers.map((answer) => (
