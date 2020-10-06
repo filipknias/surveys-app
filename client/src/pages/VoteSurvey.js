@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 // Components
-import SurveyHeader from "../components/surveys/SurveyHeader";
+import SurveyCardHeader from "../components/surveys/SurveyCardHeader";
 import ShareSurveyPopover from "../components/surveys/ShareSurveyPopover";
 // Bootstrap
 import Alert from "react-bootstrap/Alert";
@@ -41,13 +41,6 @@ export default function VoteSurvey(props) {
           type: SET_VALUES,
           payload: { survey: res.data },
         });
-        // Set expiration date
-        if (res.data.expirationDate) {
-          dispatch({
-            type: SET_VALUES,
-            payload: { expirationDate: res.data.expirationDate },
-          });
-        }
         // Set answers
         const answersState = res.data.answers.map((answer) => {
           return {
@@ -91,6 +84,17 @@ export default function VoteSurvey(props) {
     // Format checked array to only values array
     const answersValues = checkedAnswers.map((answer) => {
       return answer.value;
+    });
+
+    // Clear survey state
+    dispatch({
+      type: SET_VALUES,
+      payload: {
+        survey: {},
+        answers: [],
+        error: null,
+        isValid: false,
+      },
     });
 
     axios
@@ -161,7 +165,7 @@ export default function VoteSurvey(props) {
             <Spinner animation="border" className="m-auto d-block" />
           ) : (
             <>
-              <SurveyHeader />
+              <SurveyCardHeader />
               <Form className="mt-4" onSubmit={handleSubmit}>
                 {surveyState.answers &&
                   surveyState.answers.map((answer) => (
@@ -199,7 +203,7 @@ export default function VoteSurvey(props) {
                         Results
                       </Button>
                     </Link>
-                    <ShareSurveyPopover history={props.history} />
+                    <ShareSurveyPopover />
                   </div>
                 </div>
               </Form>

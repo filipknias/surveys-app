@@ -11,7 +11,7 @@ import { SurveyContext } from "../../context/SurveyContext";
 // Images
 import EditIcon from "../img/edit-icon.svg";
 
-export default function SurveyHeader() {
+export default function SurveyCardHeader() {
   // Context
   const [userState] = useContext(UserContext);
   const [surveyState] = useContext(SurveyContext);

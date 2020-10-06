@@ -37,8 +37,8 @@ router.get("/:surveyId", async (req, res) => {
   try {
     const votes = await Vote.find({ survey: req.params.surveyId });
     res.status(200).json(votes);
-  } catch {
-    console.error(err);
+  } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "Somethink went wrong, please try again" });
   }
 });

@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 // Components
-import SurveyHeader from "../components/surveys/SurveyHeader";
+import SurveyCardHeader from "../components/surveys/SurveyCardHeader";
 import ShareSurveyPopover from "../components/surveys/ShareSurveyPopover";
 // Bootstrap
 import Image from "react-bootstrap/Image";
@@ -22,7 +22,6 @@ export default function ResultsSurvey(props) {
   const [surveyState, dispatch] = useContext(SurveyContext);
   // State
   const [votes, setVotes] = useState([]);
-  const [totalVotes, setTotalVotes] = useState(0);
 
   // Set survey
   useEffect(() => {
@@ -37,21 +36,21 @@ export default function ResultsSurvey(props) {
           type: SET_VALUES,
           payload: { survey: res.data },
         });
+
         // Set answers
-        const answersState = res.data.answers.map((answer) => {
-          return {
-            ...answer,
-          };
-        });
         dispatch({
           type: SET_VALUES,
-          payload: { answers: answersState },
+          payload: { answers: res.data.answers },
         });
         // Stop loading
         dispatch({ type: STOP_LOADING });
       })
-      .catch(() => {
-        props.history.push("/");
+      .catch((err) => {
+        // Set error
+        dispatch({
+          type: SET_VALUES,
+          payload: { error: err.response.data.error },
+        });
         // Stop loading
         dispatch({ type: STOP_LOADING });
       });
@@ -62,7 +61,6 @@ export default function ResultsSurvey(props) {
     // Check if survey is fetched
     if (Object.keys(surveyState.survey).length === 0) return;
 
-    // Get all votes from this survey
     axios
       .get(`/api/votes/${surveyState.survey._id}`)
       .then((res) => {
@@ -72,14 +70,14 @@ export default function ResultsSurvey(props) {
             return answer;
           });
         });
-        // Set formatted votes and total votes
+        // Set formatted votes
         setVotes(formatVotes(surveyVotes));
-        setTotalVotes(surveyVotes.length);
       })
       .catch((err) => {
+        // Set error
         dispatch({
           type: SET_VALUES,
-          payload: { error: err.response.data },
+          payload: { error: err.response.data.error },
         });
       });
   }, [surveyState]);
@@ -121,42 +119,55 @@ export default function ResultsSurvey(props) {
 
   return (
     <>
-      {surveyState.error && (
+      {surveyState.error ? (
         <Alert variant="danger">
           <Alert.Heading>Somethink went wrong...</Alert.Heading>
           <p>{surveyState.error}</p>
+          <hr />
+          <Link to="/">
+            <Button variant="outline-danger" className="px-4">
+              Go Back
+            </Button>
+          </Link>
         </Alert>
+      ) : (
+        <Card border="dark">
+          <Card.Header className="text-center">
+            <h4 className="my-2">
+              See <span className="green-text">Results</span>
+            </h4>
+          </Card.Header>
+          <Card.Body>
+            {surveyState.loading ? (
+              <Spinner animation="border" className="m-auto d-block" />
+            ) : (
+              <>
+                <SurveyCardHeader />
+                <h4 className="my-3">
+                  Total Votes:{" "}
+                  <span className="green-text">
+                    {surveyState.survey.votesCount}
+                  </span>
+                </h4>
+                {votes.map((vote) => (
+                  <p>
+                    {vote.answer} - {vote.votesCount}
+                  </p>
+                ))}
+                <div className="d-flex justify-content-between justify-content-md-end mt-5">
+                  <Link to={`/surveys/${surveyState.survey._id}/vote`}>
+                    <Button type="button" variant="info" className=" mr-4 px-5">
+                      <Image src={ResultsIcon} height="18" className="mr-2" />
+                      Vote
+                    </Button>
+                  </Link>
+                  <ShareSurveyPopover />
+                </div>
+              </>
+            )}
+          </Card.Body>
+        </Card>
       )}
-      <Card border="dark">
-        <Card.Header className="text-center">
-          <h4 className="my-2">
-            See <span className="green-text">Results</span>
-          </h4>
-        </Card.Header>
-        <Card.Body>
-          {surveyState.loading ? (
-            <Spinner animation="border" className="m-auto d-block" />
-          ) : (
-            <>
-              <SurveyHeader />
-              {votes.map((vote) => (
-                <p>
-                  {vote.answer} - {vote.votesCount}
-                </p>
-              ))}
-              <div className="d-flex justify-content-between justify-content-md-end mt-5">
-                <Link to={`/surveys/${surveyState.survey._id}/vote`}>
-                  <Button type="button" variant="info" className=" mr-4 px-5">
-                    <Image src={ResultsIcon} height="18" className="mr-2" />
-                    Vote
-                  </Button>
-                </Link>
-                <ShareSurveyPopover history={props.history} />
-              </div>
-            </>
-          )}
-        </Card.Body>
-      </Card>
     </>
   );
 }
