@@ -30,7 +30,10 @@ export default function SurveyInfoForm() {
     } = formState;
     let error = null;
 
-    if (title.length < MIN_TITLE_LENGTH || title.length > MAX_TITLE_LENGTH) {
+    if (
+      title.trim().length < MIN_TITLE_LENGTH ||
+      title.trim().length > MAX_TITLE_LENGTH
+    ) {
       error = `Title length must be between ${MIN_TITLE_LENGTH} and ${MAX_TITLE_LENGTH} characters.`;
     }
     if (title === "") {
@@ -47,8 +50,8 @@ export default function SurveyInfoForm() {
     let error = null;
 
     if (
-      description.length < MIN_DESCRIPTION_LENGTH ||
-      description.length > MAX_DESCRIPTION_LENGTH
+      description.trim().length < MIN_DESCRIPTION_LENGTH ||
+      description.trim().length > MAX_DESCRIPTION_LENGTH
     ) {
       error = `Description length must be between ${MIN_DESCRIPTION_LENGTH} and ${MAX_DESCRIPTION_LENGTH} characters.`;
     }

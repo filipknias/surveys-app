@@ -34,7 +34,9 @@ router.post("/create", verifyToken, async (req, res) => {
     res.status(200).json(survey);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Somethink went wrong, please try again" });
+    res
+      .status(500)
+      .json({ error: "Could not save your survey. Please try again." });
   }
 });
 
@@ -55,7 +57,7 @@ router.get("/get", async (req, res) => {
     console.error(err);
     return res
       .status(500)
-      .json({ error: "Somethink went wrong, please try again" });
+      .json({ error: "Could not load the resources. Please try again." });
   }
 });
 
@@ -76,7 +78,7 @@ router.get("/get/:id", async (req, res) => {
     console.error(err);
     return res
       .status(500)
-      .json({ error: "Somethink went wrong, please try again" });
+      .json({ error: "Could not load the resources. Please try again." });
   }
 });
 
@@ -90,7 +92,7 @@ router.put("/:id", verifyToken, async (req, res) => {
     console.error(err);
     return res
       .status(500)
-      .json({ error: "Somethink went wrong, please try again" });
+      .json({ error: "Could not save your survey. Please try again." });
   }
 });
 
@@ -105,7 +107,7 @@ router.delete("/:id", verifyToken, async (req, res) => {
     console.error(err);
     return res
       .status(500)
-      .json({ error: "Somethink went wrong, please try again" });
+      .json({ error: "Could not delete your survey. Please try again." });
   }
 });
 

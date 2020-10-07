@@ -50,7 +50,9 @@ router.post("/register", registerValidation, async (req, res) => {
     res.status(200).json({ token, user: userData });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Somethink went wrong, please try again" });
+    res
+      .status(500)
+      .json({ error: "Could not register user. Please try again." });
   }
 });
 
@@ -97,7 +99,7 @@ router.get("/:userId", verifyToken, async (req, res) => {
     res.status(200).json(userData);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Somethink went wrong, please try again" });
+    res.status(500).json({ error: "Could not get a user. Please try again." });
   }
 });
 

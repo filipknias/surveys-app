@@ -27,7 +27,7 @@ router.post("/:surveyId", async (req, res) => {
     console.error(err);
     return res
       .status(500)
-      .json({ error: "Somethink went wrong, please try again" });
+      .json({ error: "Could not send your vote. Please try again." });
   }
 });
 
@@ -39,7 +39,9 @@ router.get("/:surveyId", async (req, res) => {
     res.status(200).json(votes);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "Somethink went wrong, please try again" });
+    res
+      .status(500)
+      .json({ error: "Could not get the votes. Please try again." });
   }
 });
 

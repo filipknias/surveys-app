@@ -4,10 +4,10 @@ import axios from "axios";
 // Components
 import SurveyCardHeader from "../components/surveys/SurveyCardHeader";
 import ShareSurveyPopover from "../components/surveys/ShareSurveyPopover";
+import Error from "../components/Error";
 // Bootstrap
 import Image from "react-bootstrap/Image";
 import Card from "react-bootstrap/Card";
-import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 // Images
@@ -31,16 +31,15 @@ export default function ResultsSurvey(props) {
     axios
       .get(`/api/surveys/get/${surveyId}`)
       .then((res) => {
+        // Clear error
+        dispatch({
+          type: SET_VALUES,
+          payload: { error: null },
+        });
         // Set survey
         dispatch({
           type: SET_VALUES,
           payload: { survey: res.data },
-        });
-
-        // Set answers
-        dispatch({
-          type: SET_VALUES,
-          payload: { answers: res.data.answers },
         });
         // Stop loading
         dispatch({ type: STOP_LOADING });
@@ -64,6 +63,11 @@ export default function ResultsSurvey(props) {
     axios
       .get(`/api/votes/${surveyState.survey._id}`)
       .then((res) => {
+        // Clear error
+        dispatch({
+          type: SET_VALUES,
+          payload: { error: null },
+        });
         // Get survey votes in one array
         const surveyVotes = res.data.map((vote) => {
           return vote.answers.map((answer) => {
@@ -85,7 +89,7 @@ export default function ResultsSurvey(props) {
   // Format votes
   const formatVotes = (votes) => {
     // Get all answers in one array
-    const answersValues = surveyState.answers.map((answer) => {
+    const answersValues = surveyState.survey.answers.map((answer) => {
       return answer.value;
     });
 
@@ -120,16 +124,7 @@ export default function ResultsSurvey(props) {
   return (
     <>
       {surveyState.error ? (
-        <Alert variant="danger">
-          <Alert.Heading>Somethink went wrong...</Alert.Heading>
-          <p>{surveyState.error}</p>
-          <hr />
-          <Link to="/">
-            <Button variant="outline-danger" className="px-4">
-              Go Back
-            </Button>
-          </Link>
-        </Alert>
+        <Error message={surveyState.error} />
       ) : (
         <Card border="dark">
           <Card.Header className="text-center">

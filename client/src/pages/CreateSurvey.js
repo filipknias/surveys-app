@@ -4,6 +4,7 @@ import axios from "axios";
 import SurveyInfoForm from "../components/forms/SurveyInfoForm";
 import SurveyAnswersForm from "../components/forms/SurveyAnswersForm";
 import SurveyOptionsForm from "../components/forms/SurveyOptionsForm";
+import Error from "../components/Error";
 // Bootstrap
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -18,6 +19,7 @@ import {
   NEXT_STEP,
   PREV_STEP,
   SET_ERRORS,
+  CLEAR_ERRORS,
   START_LOADING,
   STOP_LOADING,
 } from "../reducers/types";
@@ -27,6 +29,7 @@ export default function CreateSurvey({ history }) {
   const [userState] = useContext(UserContext);
   const [formState, dispatch] = useContext(FormContext);
 
+  // Submit survey
   const handleSubmit = (e) => {
     e.preventDefault();
     // Prevent submit on prev steps
@@ -57,6 +60,11 @@ export default function CreateSurvey({ history }) {
     axios
       .post("/api/surveys/create", newSurveyData)
       .then((res) => {
+        // Clear errors
+        dispatch({
+          type: CLEAR_ERRORS,
+          payload: { general: null },
+        });
         // Redirect to survey vote page
         history.push(`/surveys/${res.data._id}/vote`);
         // Stop loading
@@ -65,7 +73,7 @@ export default function CreateSurvey({ history }) {
       .catch((err) => {
         dispatch({
           type: SET_ERRORS,
-          payload: { general: err.response.data },
+          payload: { general: err.response.data.error },
         });
         // Stop loading
         dispatch({ type: STOP_LOADING });
@@ -122,56 +130,56 @@ export default function CreateSurvey({ history }) {
 
   return (
     <>
-      {!userState.isAuth && (
-        <Alert variant="danger">
-          <Alert.Heading>Sign in to get more advantages!</Alert.Heading>
-          <p>
-            To be able to create surveys and share them to the world you need to
-            join us by creating a free account or sign in by clicking on the
-            navbar button.
-          </p>
-        </Alert>
-      )}
-      <Card border="dark">
-        <Card.Header className="text-center">
-          <h4 className="my-2">
-            Create your own <span className="green-text">custom survey</span>
-          </h4>
-        </Card.Header>
-        <Card.Body className="px-md-5">
-          {FormHeader()}
-          {formState.errors.general && (
-            <Alert variant="warning">
-              <Alert.Heading>Somethink went wrong...</Alert.Heading>
-              <p>Please refresh page or try again later.</p>
+      {formState.errors.general ? (
+        <Error message={formState.errors.general} />
+      ) : (
+        <>
+          {!userState.isAuth && (
+            <Alert variant="danger">
+              <Alert.Heading>Sign in to get more advantages!</Alert.Heading>
+              <p>
+                To be able to create surveys you need to create a free account
+                or sign in by clicking on the navbar button.
+              </p>
             </Alert>
           )}
-          <Form onSubmit={handleSubmit}>{FormContent()}</Form>
-          <div className="d-flex justify-content-between mt-5">
-            {formState.currentStep > 1 && (
-              <Button
-                variant="outline-primary"
-                size="lg"
-                className="px-5"
-                onClick={() => dispatch({ type: PREV_STEP })}
-              >
-                Prev
-              </Button>
-            )}
-            {formState.currentStep < formState.steps.length && (
-              <Button
-                variant="primary"
-                size="lg"
-                className="px-5 ml-auto"
-                onClick={() => dispatch({ type: NEXT_STEP })}
-                disabled={formState.isValid ? false : true}
-              >
-                Next
-              </Button>
-            )}
-          </div>
-        </Card.Body>
-      </Card>
+          <Card border="dark">
+            <Card.Header className="text-center">
+              <h4 className="my-2">
+                Create your own{" "}
+                <span className="green-text">custom survey</span>
+              </h4>
+            </Card.Header>
+            <Card.Body className="px-md-5">
+              {FormHeader()}
+              <Form onSubmit={handleSubmit}>{FormContent()}</Form>
+              <div className="d-flex justify-content-between mt-5">
+                {formState.currentStep > 1 && (
+                  <Button
+                    variant="outline-primary"
+                    size="lg"
+                    className="px-5"
+                    onClick={() => dispatch({ type: PREV_STEP })}
+                  >
+                    Prev
+                  </Button>
+                )}
+                {formState.currentStep < formState.steps.length && (
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="px-5 ml-auto"
+                    onClick={() => dispatch({ type: NEXT_STEP })}
+                    disabled={formState.isValid ? false : true}
+                  >
+                    Next
+                  </Button>
+                )}
+              </div>
+            </Card.Body>
+          </Card>
+        </>
+      )}
     </>
   );
 }

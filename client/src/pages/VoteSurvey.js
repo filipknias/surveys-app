@@ -4,8 +4,8 @@ import axios from "axios";
 // Components
 import SurveyCardHeader from "../components/surveys/SurveyCardHeader";
 import ShareSurveyPopover from "../components/surveys/ShareSurveyPopover";
+import Error from "../components/Error";
 // Bootstrap
-import Alert from "react-bootstrap/Alert";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
@@ -50,7 +50,12 @@ export default function VoteSurvey(props) {
         });
         dispatch({
           type: SET_VALUES,
-          payload: { answers: answersState },
+          payload: {
+            survey: {
+              ...res.data,
+              answers: answersState,
+            },
+          },
         });
         // Stop loading
         dispatch({ type: STOP_LOADING });
@@ -64,7 +69,9 @@ export default function VoteSurvey(props) {
 
   // Answers validation
   useEffect(() => {
-    const checkedAnswers = surveyState.answers.filter((answer) => {
+    if (Object.keys(surveyState.survey).length === 0) return;
+
+    const checkedAnswers = surveyState.survey.answers.filter((answer) => {
       return answer.checked === true;
     });
     if (checkedAnswers.length < 1) {
@@ -72,13 +79,13 @@ export default function VoteSurvey(props) {
     } else {
       dispatch({ type: SET_VALID });
     }
-  }, [surveyState.answers]);
+  }, [surveyState.survey.answers]);
 
   // Submit vote
   const handleSubmit = (e) => {
     e.preventDefault();
     // Get checked answers values
-    const checkedAnswers = surveyState.answers.filter((answer) => {
+    const checkedAnswers = surveyState.survey.answers.filter((answer) => {
       return answer.checked === true;
     });
     // Format checked array to only values array
@@ -91,7 +98,6 @@ export default function VoteSurvey(props) {
       type: SET_VALUES,
       payload: {
         survey: {},
-        answers: [],
         error: null,
         isValid: false,
       },
@@ -100,19 +106,27 @@ export default function VoteSurvey(props) {
     axios
       .post(`/api/votes/${surveyState.survey._id}`, { answers: answersValues })
       .then(() => {
+        // Clear error
+        dispatch({
+          type: SET_VALUES,
+          payload: { error: null },
+        });
         props.history.push(`/surveys/${surveyState.survey._id}/results`);
       })
       .catch((err) => {
+        // Set error
         dispatch({
           type: SET_VALUES,
-          payload: { error: err.response.data },
+          payload: { error: err.response.data.error },
         });
       });
   };
 
   // Answers change state update
   const handleAnswerChange = (answerId) => {
-    const updatedAnswers = surveyState.answers.map((answer) => {
+    const { survey } = surveyState;
+
+    const updatedAnswers = survey.answers.map((answer) => {
       if (answer.id === answerId) {
         if (surveyState.survey.multipleAnswers) {
           // Multiple answer
@@ -140,77 +154,85 @@ export default function VoteSurvey(props) {
         }
       }
     });
+
     dispatch({
       type: SET_VALUES,
-      payload: { answers: updatedAnswers },
+      payload: {
+        survey: {
+          ...survey,
+          answers: updatedAnswers,
+        },
+      },
     });
   };
 
   return (
     <>
-      {surveyState.error && (
-        <Alert variant="danger">
-          <Alert.Heading>Somethink went wrong...</Alert.Heading>
-          <p>{surveyState.error}</p>
-        </Alert>
-      )}
-      <Card border="dark">
-        <Card.Header className="text-center">
-          <h4 className="my-2">
-            Make a <span className="green-text">Vote</span>
-          </h4>
-        </Card.Header>
-        <Card.Body className="px-md-4">
-          {surveyState.loading ? (
-            <Spinner animation="border" className="m-auto d-block" />
-          ) : (
-            <>
-              <SurveyCardHeader />
-              <Form className="mt-4" onSubmit={handleSubmit}>
-                {surveyState.answers &&
-                  surveyState.answers.map((answer) => (
-                    <Form.Group key={answer.id}>
-                      <Form.Check
-                        type={
-                          surveyState.survey.multipleAnswers
-                            ? "checkbox"
-                            : "radio"
-                        }
-                        label={answer.value}
-                        id={answer.id}
-                        checked={answer.checked}
-                        onChange={() => handleAnswerChange(answer.id)}
-                      />
-                    </Form.Group>
-                  ))}
-                <div className="d-flex flex-column flex-md-row justify-content-between mt-5">
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    className="px-5"
-                    disabled={surveyState.isValid ? false : true}
-                  >
-                    Vote
-                  </Button>
-                  <div className="d-flex justify-content-between mt-md-0 mt-3">
-                    <Link to={`/surveys/${surveyState.survey._id}/results`}>
-                      <Button
-                        type="button"
-                        variant="info"
-                        className="mr-4 px-5"
-                      >
-                        <Image src={ResultsIcon} height="18" className="mr-2" />
-                        Results
-                      </Button>
-                    </Link>
-                    <ShareSurveyPopover />
+      {surveyState.error ? (
+        <Error message={surveyState.error} />
+      ) : (
+        <Card border="dark">
+          <Card.Header className="text-center">
+            <h4 className="my-2">
+              Make a <span className="green-text">Vote</span>
+            </h4>
+          </Card.Header>
+          <Card.Body className="px-md-4">
+            {surveyState.loading ? (
+              <Spinner animation="border" className="m-auto d-block" />
+            ) : (
+              <>
+                <SurveyCardHeader />
+                <Form className="mt-4" onSubmit={handleSubmit}>
+                  {surveyState.survey.answers &&
+                    surveyState.survey.answers.map((answer) => (
+                      <Form.Group key={answer.id}>
+                        <Form.Check
+                          type={
+                            surveyState.survey.multipleAnswers
+                              ? "checkbox"
+                              : "radio"
+                          }
+                          label={answer.value}
+                          id={answer.id}
+                          checked={answer.checked}
+                          onChange={() => handleAnswerChange(answer.id)}
+                        />
+                      </Form.Group>
+                    ))}
+                  <div className="d-flex flex-column flex-md-row justify-content-between mt-5">
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      className="px-5"
+                      disabled={surveyState.isValid ? false : true}
+                    >
+                      Vote
+                    </Button>
+                    <div className="d-flex justify-content-between mt-md-0 mt-3">
+                      <Link to={`/surveys/${surveyState.survey._id}/results`}>
+                        <Button
+                          type="button"
+                          variant="info"
+                          className="mr-4 px-5"
+                        >
+                          <Image
+                            src={ResultsIcon}
+                            height="18"
+                            className="mr-2"
+                          />
+                          Results
+                        </Button>
+                      </Link>
+                      <ShareSurveyPopover />
+                    </div>
                   </div>
-                </div>
-              </Form>
-            </>
-          )}
-        </Card.Body>
-      </Card>
+                </Form>
+              </>
+            )}
+          </Card.Body>
+        </Card>
+      )}
     </>
   );
 }

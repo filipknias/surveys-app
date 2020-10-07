@@ -24,6 +24,7 @@ export default function SurveyCardHeader() {
   useEffect(() => {
     // Check if survey is fetched
     if (Object.keys(surveyState.survey).length === 0) return;
+
     axios
       .get(`/api/users/${surveyState.survey.author}`)
       .then((res) => {

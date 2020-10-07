@@ -19,7 +19,7 @@ export default function SurveyAnswersForm() {
   // Answers validation
   useEffect(() => {
     const filledAnswers = formState.values.answers.filter((answer) => {
-      return answer.value !== "";
+      return answer.value.trim() !== "";
     });
 
     if (filledAnswers.length < 2) {
