@@ -60,8 +60,12 @@ export default function VoteSurvey(props) {
         // Stop loading
         dispatch({ type: STOP_LOADING });
       })
-      .catch(() => {
-        props.history.push("/");
+      .catch((err) => {
+        // Set error
+        dispatch({
+          type: SET_VALUES,
+          payload: { error: err.response.data.error },
+        });
         // Stop loading
         dispatch({ type: STOP_LOADING });
       });

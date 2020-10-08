@@ -223,6 +223,7 @@ export default function SurveyOptionsForm() {
         <Form.Check
           type="checkbox"
           label="Expiration Date"
+          id="expiration-date"
           checked={expirationDate}
           onChange={() => setExpirationDate((prevDate) => !prevDate)}
         />

@@ -4,6 +4,9 @@ const router = express.Router();
 // Imports
 const Survey = require("../models/Survey");
 const Vote = require("../models/Vote");
+
+// Middleware
+const checkExpirationDate = require("../utilities/checkExpirationDate");
 const verifyToken = require("../utilities/verifyToken");
 
 // POST /api/surveys/create
@@ -47,7 +50,6 @@ router.get("/get", async (req, res) => {
   try {
     const survey = await Survey.find({
       status: "public",
-      expirationDate: null,
     })
       .sort({ [req.query.sort]: -1 })
       .limit(limit);
@@ -63,16 +65,9 @@ router.get("/get", async (req, res) => {
 
 // GET /api/surveys/get/:id
 // Get survey by id
-router.get("/get/:id", async (req, res) => {
+router.get("/get/:id", checkExpirationDate, async (req, res) => {
   try {
     const survey = await Survey.findById(req.params.id);
-    // Check expiration date of survey
-    if (
-      survey.expirationDate &&
-      Date.now() > Date.parse(survey.expirationDate)
-    ) {
-      return res.status(400).json({ error: "Survey is closed." });
-    }
     return res.status(200).json(survey);
   } catch (err) {
     console.error(err);

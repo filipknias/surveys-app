@@ -12,3 +12,4 @@ export const SET_VALID = "SET_VALID";
 export const SET_INVALID = "SET_INVALID";
 export const NEXT_STEP = "NEXT_STEP";
 export const PREV_STEP = "PREV_STEP";
+export const RESET_VALUES = "RESET_VALUES";

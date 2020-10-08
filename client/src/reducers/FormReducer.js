@@ -8,6 +8,7 @@ import {
   PREV_STEP,
   START_LOADING,
   STOP_LOADING,
+  RESET_VALUES,
 } from "./types";
 
 export default function FormReducer(state, action) {
@@ -69,6 +70,33 @@ export default function FormReducer(state, action) {
       return {
         ...state,
         loading: false,
+      };
+    case RESET_VALUES:
+      return {
+        ...state,
+        currentStep: 1,
+        values: {
+          title: "",
+          description: "",
+          status: "public",
+          expirationDate: {
+            date: null,
+            hour: null,
+            minute: null,
+            formattedDate: null,
+          },
+          multipleAnswers: false,
+          answers: [
+            {
+              id: 1,
+              value: "",
+            },
+            {
+              id: 2,
+              value: "",
+            },
+          ],
+        },
       };
     default:
       return state;

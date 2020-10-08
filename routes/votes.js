@@ -5,20 +5,21 @@ const router = express.Router();
 const Vote = require("../models/Vote");
 const Survey = require("../models/Survey");
 
+// Middleware
+const checkExpirationDate = require("../utilities/checkExpirationDate");
+
 // POST /api/votes/:surveyId
 // Send a vote to survey with given id
-router.post("/:surveyId", async (req, res) => {
+router.post("/:id", checkExpirationDate, async (req, res) => {
   const vote = new Vote({
-    survey: req.params.surveyId,
+    survey: req.params.id,
     answers: req.body.answers,
   });
   try {
-    const survey = await Survey.findById(req.params.surveyId);
-    if (survey.status === "closed") {
-      return res.status(400).json({ error: "This survey is closed." });
-    }
+    const survey = await Survey.findById(req.params.id);
+    // Update votes count
     await survey.updateOne({
-      $inc: { votesCount: 1 },
+      $inc: { votesCount: req.body.answers.length },
     });
 
     const savedVote = await vote.save();
@@ -33,9 +34,9 @@ router.post("/:surveyId", async (req, res) => {
 
 // GET /api/votes/:surveyId
 // Get all votes sended to survey with given id
-router.get("/:surveyId", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const votes = await Vote.find({ survey: req.params.surveyId });
+    const votes = await Vote.find({ survey: req.params.id });
     res.status(200).json(votes);
   } catch (err) {
     console.log(err);

@@ -22,6 +22,7 @@ import {
   CLEAR_ERRORS,
   START_LOADING,
   STOP_LOADING,
+  RESET_VALUES,
 } from "../reducers/types";
 
 export default function CreateSurvey({ history }) {
@@ -40,13 +41,21 @@ export default function CreateSurvey({ history }) {
 
     const { values } = formState;
     // New Survey Data
+
+    // Format answers
     const filledAnswers = values.answers.filter((answer) => {
-      return answer.value !== "";
+      return answer.value.trim().length > 0;
+    });
+    const formattedAnswers = filledAnswers.map((answer) => {
+      return {
+        ...answer,
+        value: answer.value.trim(),
+      };
     });
     const newSurveyData = {
       title: values.title,
       description: values.description,
-      answers: filledAnswers,
+      answers: formattedAnswers,
       status: values.status,
       multipleAnswers: values.multipleAnswers,
     };
@@ -60,6 +69,8 @@ export default function CreateSurvey({ history }) {
     axios
       .post("/api/surveys/create", newSurveyData)
       .then((res) => {
+        // Reset values
+        dispatch({ type: RESET_VALUES });
         // Clear errors
         dispatch({
           type: CLEAR_ERRORS,

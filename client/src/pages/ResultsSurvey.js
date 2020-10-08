@@ -10,6 +10,7 @@ import Image from "react-bootstrap/Image";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
+import ProgressBar from "react-bootstrap/ProgressBar";
 // Images
 import ResultsIcon from "../components/img/results-icon.svg";
 // Context
@@ -22,6 +23,16 @@ export default function ResultsSurvey(props) {
   const [surveyState, dispatch] = useContext(SurveyContext);
   // State
   const [votes, setVotes] = useState([]);
+
+  const progressBarColors = [
+    "primary",
+    "secondary",
+    "success",
+    "danger",
+    "warning",
+    "info",
+    "dark",
+  ];
 
   // Set survey
   useEffect(() => {
@@ -84,7 +95,7 @@ export default function ResultsSurvey(props) {
           payload: { error: err.response.data.error },
         });
       });
-  }, [surveyState]);
+  }, [surveyState.survey]);
 
   // Format votes
   const formatVotes = (votes) => {
@@ -110,15 +121,25 @@ export default function ResultsSurvey(props) {
       return {
         answer: answersValues[index],
         votesCount: vote.length,
+        progressBarLabel: calcProgress(
+          vote.length,
+          surveyState.survey.votesCount
+        ),
       };
     });
-
+    console.log(formattedVotes);
     // Sort formatted votes by descending order
     const sortedVotes = formattedVotes.sort((a, b) => {
       return b.votesCount - a.votesCount;
     });
 
     return sortedVotes;
+  };
+
+  // Calculate progress to %
+  const calcProgress = (num, total) => {
+    const convertedNum = (num / total) * 100;
+    return Math.round(convertedNum);
   };
 
   return (
@@ -132,7 +153,7 @@ export default function ResultsSurvey(props) {
               See <span className="green-text">Results</span>
             </h4>
           </Card.Header>
-          <Card.Body>
+          <Card.Body className="px-md-4">
             {surveyState.loading ? (
               <Spinner animation="border" className="m-auto d-block" />
             ) : (
@@ -144,11 +165,23 @@ export default function ResultsSurvey(props) {
                     {surveyState.survey.votesCount}
                   </span>
                 </h4>
-                {votes.map((vote) => (
-                  <p>
-                    {vote.answer} - {vote.votesCount}
-                  </p>
-                ))}
+                {votes.length > 0 ? (
+                  <>
+                    {votes.map((vote, index) => (
+                      <div className="my-4" key={index}>
+                        <p className="mb-1">{vote.answer}</p>
+                        <ProgressBar
+                          now={vote.progressBarLabel}
+                          label={`${vote.progressBarLabel}%`}
+                          variant={progressBarColors[index]}
+                        />
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <p>No votes</p>
+                )}
+
                 <div className="d-flex justify-content-between justify-content-md-end mt-5">
                   <Link to={`/surveys/${surveyState.survey._id}/vote`}>
                     <Button type="button" variant="info" className=" mr-4 px-5">
