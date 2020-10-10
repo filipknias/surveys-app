@@ -20,8 +20,10 @@ import {
   SET_VALUES,
   SET_VALID,
   SET_INVALID,
-  START_LOADING,
-  STOP_LOADING,
+  START_SURVEY_LOADING,
+  STOP_SURVEY_LOADING,
+  START_VOTE_LOADING,
+  STOP_VOTE_LOADING,
 } from "../reducers/types";
 
 export default function VoteSurvey(props) {
@@ -31,7 +33,7 @@ export default function VoteSurvey(props) {
   // Set survey
   useEffect(() => {
     // Start loading
-    dispatch({ type: START_LOADING });
+    dispatch({ type: START_SURVEY_LOADING });
     const surveyId = props.match.params.surveyId;
     axios
       .get(`/api/surveys/get/${surveyId}`)
@@ -58,7 +60,7 @@ export default function VoteSurvey(props) {
           },
         });
         // Stop loading
-        dispatch({ type: STOP_LOADING });
+        dispatch({ type: STOP_SURVEY_LOADING });
       })
       .catch((err) => {
         // Set error
@@ -67,7 +69,7 @@ export default function VoteSurvey(props) {
           payload: { error: err.response.data.error },
         });
         // Stop loading
-        dispatch({ type: STOP_LOADING });
+        dispatch({ type: STOP_SURVEY_LOADING });
       });
   }, []);
 
@@ -88,6 +90,8 @@ export default function VoteSurvey(props) {
   // Submit vote
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Start loading
+    dispatch({ type: START_VOTE_LOADING });
     // Get checked answers values
     const checkedAnswers = surveyState.survey.answers.filter((answer) => {
       return answer.checked === true;
@@ -115,6 +119,8 @@ export default function VoteSurvey(props) {
           type: SET_VALUES,
           payload: { error: null },
         });
+        // Stop loading
+        dispatch({ type: STOP_VOTE_LOADING });
         props.history.push(`/surveys/${surveyState.survey._id}/results`);
       })
       .catch((err) => {
@@ -123,6 +129,8 @@ export default function VoteSurvey(props) {
           type: SET_VALUES,
           payload: { error: err.response.data.error },
         });
+        // Stop loading
+        dispatch({ type: STOP_VOTE_LOADING });
       });
   };
 
@@ -182,7 +190,7 @@ export default function VoteSurvey(props) {
             </h4>
           </Card.Header>
           <Card.Body className="px-md-4">
-            {surveyState.loading ? (
+            {surveyState.surveyLoading ? (
               <Spinner animation="border" className="m-auto d-block" />
             ) : (
               <>
@@ -211,7 +219,11 @@ export default function VoteSurvey(props) {
                       className="px-5"
                       disabled={surveyState.isValid ? false : true}
                     >
-                      Vote
+                      {surveyState.voteLoading ? (
+                        <Spinner animation="border" className="m-auto d-block" />
+                      ) : (
+                        <p>Vote</p>
+                      )}
                     </Button>
                     <div className="d-flex justify-content-between mt-md-0 mt-3">
                       <Link to={`/surveys/${surveyState.survey._id}/results`}>

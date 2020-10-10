@@ -16,15 +16,16 @@ import ResultsIcon from "../components/img/results-icon.svg";
 // Context
 import { SurveyContext } from "../context/SurveyContext";
 // Reducer Types
-import { SET_VALUES, START_LOADING, STOP_LOADING } from "../reducers/types";
+import { SET_VALUES, START_SURVEY_LOADING, STOP_SURVEY_LOADING } from "../reducers/types";
 
 export default function ResultsSurvey(props) {
   // Context
   const [surveyState, dispatch] = useContext(SurveyContext);
   // State
   const [votes, setVotes] = useState([]);
+  const [progressBarColors, setProgressBarColors] = useState([]);
 
-  const progressBarColors = [
+  const PROGRESS_BAR_COLORS = [
     "primary",
     "secondary",
     "success",
@@ -37,7 +38,7 @@ export default function ResultsSurvey(props) {
   // Set survey
   useEffect(() => {
     // Start loading
-    dispatch({ type: START_LOADING });
+    dispatch({ type: START_SURVEY_LOADING });
     const surveyId = props.match.params.surveyId;
     axios
       .get(`/api/surveys/get/${surveyId}`)
@@ -53,7 +54,7 @@ export default function ResultsSurvey(props) {
           payload: { survey: res.data },
         });
         // Stop loading
-        dispatch({ type: STOP_LOADING });
+        dispatch({ type: STOP_SURVEY_LOADING });
       })
       .catch((err) => {
         // Set error
@@ -62,10 +63,10 @@ export default function ResultsSurvey(props) {
           payload: { error: err.response.data.error },
         });
         // Stop loading
-        dispatch({ type: STOP_LOADING });
+        dispatch({ type: STOP_SURVEY_LOADING });
       });
   }, []);
-
+  
   // Set votes
   useEffect(() => {
     // Check if survey is fetched
@@ -97,6 +98,23 @@ export default function ResultsSurvey(props) {
       });
   }, [surveyState.survey]);
 
+  // Set progress bar colors
+  useEffect(() => {
+    setProgressBarColors(progressColors(votes.length));
+  }, [votes]);
+
+  // Progress colors
+  const progressColors = (colorsAmount) => {
+    const colors = [];
+    let current = 0;
+    while (colors.length <= colorsAmount) {
+      colors.push(PROGRESS_BAR_COLORS[current]);
+      current++;
+      if (current > PROGRESS_BAR_COLORS.length-1) current = 0;
+    }
+    return colors;
+  };
+
   // Format votes
   const formatVotes = (votes) => {
     // Get all answers in one array
@@ -127,7 +145,7 @@ export default function ResultsSurvey(props) {
         ),
       };
     });
-    console.log(formattedVotes);
+
     // Sort formatted votes by descending order
     const sortedVotes = formattedVotes.sort((a, b) => {
       return b.votesCount - a.votesCount;
@@ -138,6 +156,7 @@ export default function ResultsSurvey(props) {
 
   // Calculate progress to %
   const calcProgress = (num, total) => {
+    if (total === 0) return 0;
     const convertedNum = (num / total) * 100;
     return Math.round(convertedNum);
   };
@@ -154,7 +173,7 @@ export default function ResultsSurvey(props) {
             </h4>
           </Card.Header>
           <Card.Body className="px-md-4">
-            {surveyState.loading ? (
+            {surveyState.surveyLoading ? (
               <Spinner animation="border" className="m-auto d-block" />
             ) : (
               <>
@@ -165,23 +184,16 @@ export default function ResultsSurvey(props) {
                     {surveyState.survey.votesCount}
                   </span>
                 </h4>
-                {votes.length > 0 ? (
-                  <>
-                    {votes.map((vote, index) => (
-                      <div className="my-4" key={index}>
-                        <p className="mb-1">{vote.answer}</p>
-                        <ProgressBar
-                          now={vote.progressBarLabel}
-                          label={`${vote.progressBarLabel}%`}
-                          variant={progressBarColors[index]}
-                        />
-                      </div>
-                    ))}
-                  </>
-                ) : (
-                  <p>No votes</p>
-                )}
-
+                {votes.map((vote, index) => (
+                  <div className="my-4" key={index}>
+                    <p className="mb-1">{vote.answer}</p>
+                      <ProgressBar
+                      now={vote.progressBarLabel}
+                      label={`${vote.progressBarLabel}%`}
+                      variant={progressBarColors[index]}
+                    /> 
+                  </div>
+                ))}
                 <div className="d-flex justify-content-between justify-content-md-end mt-5">
                   <Link to={`/surveys/${surveyState.survey._id}/vote`}>
                     <Button type="button" variant="info" className=" mr-4 px-5">

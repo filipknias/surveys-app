@@ -2,8 +2,10 @@ import {
   SET_VALUES,
   SET_VALID,
   SET_INVALID,
-  START_LOADING,
-  STOP_LOADING,
+  START_SURVEY_LOADING,
+  STOP_SURVEY_LOADING,
+  START_VOTE_LOADING,
+  STOP_VOTE_LOADING,
 } from "./types";
 
 export default function SurveyReducer(state, action) {
@@ -23,15 +25,25 @@ export default function SurveyReducer(state, action) {
         ...state,
         isValid: false,
       };
-    case START_LOADING:
+    case START_SURVEY_LOADING:
       return {
         ...state,
-        loading: true,
+        surveyLoading: true,
       };
-    case STOP_LOADING:
+    case STOP_SURVEY_LOADING:
       return {
         ...state,
-        loading: false,
+        surveyLoading: false,
+      };
+      case START_VOTE_LOADING:
+      return {
+        ...state,
+        voteLoading: true,
+      };
+      case STOP_VOTE_LOADING:
+      return {
+        ...state,
+        voteLoading: false,
       };
     default:
       return state;

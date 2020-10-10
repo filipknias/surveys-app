@@ -5,7 +5,8 @@ const initialState = {
   survey: {},
   error: null,
   isValid: false,
-  loading: false,
+  surveyLoading: false,
+  voteLoading: false,
 };
 export const SurveyContext = createContext([initialState, () => {}]);
 

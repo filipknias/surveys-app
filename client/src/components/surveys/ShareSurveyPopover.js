@@ -45,7 +45,7 @@ export default function ShareSurveyPopover() {
   return (
     <OverlayTrigger
       trigger="click"
-      placement="bottom"
+      placement="top"
       overlay={shareSurveyPopover()}
       onToggle={() => setCopiedToClipboard(false)}
     >
