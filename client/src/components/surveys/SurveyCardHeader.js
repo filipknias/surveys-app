@@ -7,40 +7,35 @@ import Image from "react-bootstrap/Image";
 import Alert from "react-bootstrap/Alert";
 // Context
 import { UserContext } from "../../context/UserContext";
-import { SurveyContext } from "../../context/SurveyContext";
 // Images
 import EditIcon from "../img/edit-icon.svg";
 
-export default function SurveyCardHeader() {
+export default function SurveyCardHeader({ survey }) {
   // Context
   const [userState] = useContext(UserContext);
-  const [surveyState] = useContext(SurveyContext);
   // State
-  const [surveyAuthor, setSurveyAuthor] = useState(null);
+  const [author, setAuthor] = useState(null);
   const [createdAt, setCreatedAt] = useState(null);
   const [expirationDate, setExpirationDate] = useState(null);
 
   // Set survey author
   useEffect(() => {
-    // Check if survey is fetched
-    if (Object.keys(surveyState.survey).length === 0) return;
-
     axios
-      .get(`/api/users/${surveyState.survey.author}`)
+      .get(`/api/users/${survey.author}`)
       .then((res) => {
         // Set survey author
-        setSurveyAuthor(res.data);
+        setAuthor(res.data);
       })
       .catch(() => {
         // If there is any error set survye author to empty string
-        setSurveyAuthor("");
+        setAuthor("");
       });
     // Set formatted created at date
-    setCreatedAt(formatCreatedAtDate(surveyState.survey.createdAt));
+    setCreatedAt(formatCreatedAtDate(survey.createdAt));
     // Set formatted expiration date if there is any
-    if (surveyState.survey.expirationDate) {
+    if (survey.expirationDate) {
       setExpirationDate(
-        formatExpirationDate(surveyState.survey.expirationDate)
+        formatExpirationDate(survey.expirationDate)
       );
     }
   }, []);
@@ -63,17 +58,17 @@ export default function SurveyCardHeader() {
     <>
       <div className="d-flex justify-content-between align-items-start">
         <div>
-          <Card.Title>{surveyState.survey.title}</Card.Title>
-          {surveyState.survey.description && (
-            <p className="mb-3 mt-2">{surveyState.survey.description}</p>
+          <Card.Title>{survey.title}</Card.Title>
+          {survey.description && (
+            <p className="mb-3 mt-2">{survey.description}</p>
           )}
-          {createdAt && surveyAuthor && (
             <Card.Subtitle className="text-muted">
-              {createdAt} - by {surveyAuthor.displayName}
+              {author && (
+                  <span>{createdAt} - by {author.displayName}</span>
+              )}
             </Card.Subtitle>
-          )}
         </div>
-        {userState.isAuth && surveyState.survey.author === userState.user._id && (
+        {userState.isAuth && survey.author === userState.user._id && (
           <Button variant="secondary">
             <Image src={EditIcon} height="14" className="mr-2" />
             Edit

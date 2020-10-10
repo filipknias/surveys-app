@@ -154,7 +154,9 @@ export default function VoteSurvey(props) {
               <Spinner animation="border" className="m-auto d-block" />
             ) : (
               <>
-                <SurveyCardHeader />
+                {survey.author && (
+                  <SurveyCardHeader survey={survey} />
+                )}
                 <Form className="mt-4" onSubmit={handleSubmit}>
                   {survey.answers &&
                     survey.answers.map((answer) => (

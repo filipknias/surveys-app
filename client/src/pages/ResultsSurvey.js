@@ -44,8 +44,6 @@ export default function ResultsSurvey(props) {
         setError(null);
         // Set survey
         setSurvey(res.data);
-        // Stop loading
-        setLoading(false);
       })
       .catch((err) => {
         // Set error
@@ -73,10 +71,14 @@ export default function ResultsSurvey(props) {
         });
         // Set formatted votes
         setVotes(formatVotes(surveyVotes));
+        // Stop loading
+        setLoading(false);
       })
       .catch((err) => {
         // Set error
         setError(err.response.data.error);
+        // Stop loading
+        setLoading(false);
       });
   }, [survey]);
 
@@ -92,7 +94,7 @@ export default function ResultsSurvey(props) {
     while (colors.length <= colorsAmount) {
       colors.push(PROGRESS_BAR_COLORS[current]);
       current++;
-      if (current > PROGRESS_BAR_COLORS.length-1) current = 0;
+      if (current > PROGRESS_BAR_COLORS.length - 1) current = 0;
     }
     return colors;
   };
@@ -159,7 +161,9 @@ export default function ResultsSurvey(props) {
               <Spinner animation="border" className="m-auto d-block" />
             ) : (
               <>
-                <SurveyCardHeader />
+                {survey.author && (
+                  <SurveyCardHeader survey={survey} />
+                )}
                 <h4 className="my-3">
                   Total Votes:{" "}
                   <span className="green-text">
