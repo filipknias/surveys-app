@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 // Components
@@ -13,15 +13,12 @@ import Spinner from "react-bootstrap/Spinner";
 import ProgressBar from "react-bootstrap/ProgressBar";
 // Images
 import ResultsIcon from "../components/img/results-icon.svg";
-// Context
-import { SurveyContext } from "../context/SurveyContext";
-// Reducer Types
-import { SET_VALUES, START_SURVEY_LOADING, STOP_SURVEY_LOADING } from "../reducers/types";
 
 export default function ResultsSurvey(props) {
-  // Context
-  const [surveyState, dispatch] = useContext(SurveyContext);
   // State
+  const [survey, setSurvey] = useState({});
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [votes, setVotes] = useState([]);
   const [progressBarColors, setProgressBarColors] = useState([]);
 
@@ -38,48 +35,36 @@ export default function ResultsSurvey(props) {
   // Set survey
   useEffect(() => {
     // Start loading
-    dispatch({ type: START_SURVEY_LOADING });
+    setLoading(true);
     const surveyId = props.match.params.surveyId;
     axios
       .get(`/api/surveys/get/${surveyId}`)
       .then((res) => {
         // Clear error
-        dispatch({
-          type: SET_VALUES,
-          payload: { error: null },
-        });
+        setError(null);
         // Set survey
-        dispatch({
-          type: SET_VALUES,
-          payload: { survey: res.data },
-        });
+        setSurvey(res.data);
         // Stop loading
-        dispatch({ type: STOP_SURVEY_LOADING });
+        setLoading(false);
       })
       .catch((err) => {
         // Set error
-        dispatch({
-          type: SET_VALUES,
-          payload: { error: err.response.data.error },
-        });
+        setError(err.response.data.error);
         // Stop loading
-        dispatch({ type: STOP_SURVEY_LOADING });
+        setLoading(false);
       });
   }, []);
   
   // Set votes
   useEffect(() => {
     // Check if survey is fetched
-    if (Object.keys(surveyState.survey).length === 0) return;
+    if (Object.keys(survey).length === 0) return;
 
     axios
-      .get(`/api/votes/${surveyState.survey._id}`)
+      .get(`/api/votes/${survey._id}`)
       .then((res) => {
         // Clear error
-        dispatch({
-          type: SET_VALUES,
-          payload: { error: null },
-        });
+        setError(null);
         // Get survey votes in one array
         const surveyVotes = res.data.map((vote) => {
           return vote.answers.map((answer) => {
@@ -91,20 +76,17 @@ export default function ResultsSurvey(props) {
       })
       .catch((err) => {
         // Set error
-        dispatch({
-          type: SET_VALUES,
-          payload: { error: err.response.data.error },
-        });
+        setError(err.response.data.error);
       });
-  }, [surveyState.survey]);
+  }, [survey]);
 
   // Set progress bar colors
   useEffect(() => {
-    setProgressBarColors(progressColors(votes.length));
+    setProgressBarColors(formatProgressBarColors(votes.length));
   }, [votes]);
 
   // Progress colors
-  const progressColors = (colorsAmount) => {
+  const formatProgressBarColors = (colorsAmount) => {
     const colors = [];
     let current = 0;
     while (colors.length <= colorsAmount) {
@@ -118,7 +100,7 @@ export default function ResultsSurvey(props) {
   // Format votes
   const formatVotes = (votes) => {
     // Get all answers in one array
-    const answersValues = surveyState.survey.answers.map((answer) => {
+    const answersValues = survey.answers.map((answer) => {
       return answer.value;
     });
 
@@ -141,7 +123,7 @@ export default function ResultsSurvey(props) {
         votesCount: vote.length,
         progressBarLabel: calcProgress(
           vote.length,
-          surveyState.survey.votesCount
+          survey.votesCount
         ),
       };
     });
@@ -163,8 +145,8 @@ export default function ResultsSurvey(props) {
 
   return (
     <>
-      {surveyState.error ? (
-        <Error message={surveyState.error} />
+      {error ? (
+        <Error message={error} />
       ) : (
         <Card border="dark">
           <Card.Header className="text-center">
@@ -173,7 +155,7 @@ export default function ResultsSurvey(props) {
             </h4>
           </Card.Header>
           <Card.Body className="px-md-4">
-            {surveyState.surveyLoading ? (
+            {loading ? (
               <Spinner animation="border" className="m-auto d-block" />
             ) : (
               <>
@@ -181,7 +163,7 @@ export default function ResultsSurvey(props) {
                 <h4 className="my-3">
                   Total Votes:{" "}
                   <span className="green-text">
-                    {surveyState.survey.votesCount}
+                    {survey.votesCount}
                   </span>
                 </h4>
                 {votes.map((vote, index) => (
@@ -195,7 +177,7 @@ export default function ResultsSurvey(props) {
                   </div>
                 ))}
                 <div className="d-flex justify-content-between justify-content-md-end mt-5">
-                  <Link to={`/surveys/${surveyState.survey._id}/vote`}>
+                  <Link to={`/surveys/${survey._id}/vote`}>
                     <Button type="button" variant="info" className=" mr-4 px-5">
                       <Image src={ResultsIcon} height="18" className="mr-2" />
                       Vote

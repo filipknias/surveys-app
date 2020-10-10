@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 // Components
@@ -11,38 +11,26 @@ import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
-// Context
-import { SurveyContext } from "../context/SurveyContext";
 // Images
 import ResultsIcon from "../components/img/results-icon.svg";
-// Reducer Types
-import {
-  SET_VALUES,
-  SET_VALID,
-  SET_INVALID,
-  START_SURVEY_LOADING,
-  STOP_SURVEY_LOADING,
-  START_VOTE_LOADING,
-  STOP_VOTE_LOADING,
-} from "../reducers/types";
 
 export default function VoteSurvey(props) {
-  // Context
-  const [surveyState, dispatch] = useContext(SurveyContext);
+  // State
+  const [survey, setSurvey] = useState({});
+  const [error, setError] = useState(null);
+  const [valid, setValid] = useState(false);
+  const [surveyLoading, setSurveyLoading] = useState(false);
+  const [voteLoading, setVoteLoading] = useState(false);
 
   // Set survey
   useEffect(() => {
     // Start loading
-    dispatch({ type: START_SURVEY_LOADING });
+    setSurveyLoading(true);
     const surveyId = props.match.params.surveyId;
     axios
       .get(`/api/surveys/get/${surveyId}`)
       .then((res) => {
-        // Set survey
-        dispatch({
-          type: SET_VALUES,
-          payload: { survey: res.data },
-        });
+        
         // Set answers
         const answersState = res.data.answers.map((answer) => {
           return {
@@ -50,97 +38,72 @@ export default function VoteSurvey(props) {
             checked: false,
           };
         });
-        dispatch({
-          type: SET_VALUES,
-          payload: {
-            survey: {
-              ...res.data,
-              answers: answersState,
-            },
-          },
+        // Set survey
+        setSurvey({
+          ...res.data,
+          answers: answersState
         });
         // Stop loading
-        dispatch({ type: STOP_SURVEY_LOADING });
+        setSurveyLoading(false);
       })
       .catch((err) => {
         // Set error
-        dispatch({
-          type: SET_VALUES,
-          payload: { error: err.response.data.error },
-        });
+        setError(err.response.data.error);
         // Stop loading
-        dispatch({ type: STOP_SURVEY_LOADING });
+        setSurveyLoading(false);
       });
   }, []);
 
   // Answers validation
   useEffect(() => {
-    if (Object.keys(surveyState.survey).length === 0) return;
+    if (Object.keys(survey).length === 0) return;
 
-    const checkedAnswers = surveyState.survey.answers.filter((answer) => {
+    const checkedAnswers = survey.answers.filter((answer) => {
       return answer.checked === true;
     });
     if (checkedAnswers.length < 1) {
-      dispatch({ type: SET_INVALID });
+      setValid(false);
     } else {
-      dispatch({ type: SET_VALID });
+      setValid(true);
     }
-  }, [surveyState.survey.answers]);
+  }, [survey.answers]);
 
   // Submit vote
   const handleSubmit = (e) => {
     e.preventDefault();
     // Start loading
-    dispatch({ type: START_VOTE_LOADING });
+    setVoteLoading(true);
     // Get checked answers values
-    const checkedAnswers = surveyState.survey.answers.filter((answer) => {
+    const checkedAnswers = survey.answers.filter((answer) => {
       return answer.checked === true;
     });
     // Format checked array to only values array
     const answersValues = checkedAnswers.map((answer) => {
       return answer.value;
     });
-
-    // Clear survey state
-    dispatch({
-      type: SET_VALUES,
-      payload: {
-        survey: {},
-        error: null,
-        isValid: false,
-      },
-    });
-
+    
     axios
-      .post(`/api/votes/${surveyState.survey._id}`, { answers: answersValues })
+      .post(`/api/votes/${survey._id}`, { answers: answersValues })
       .then(() => {
         // Clear error
-        dispatch({
-          type: SET_VALUES,
-          payload: { error: null },
-        });
+        setError(null);
         // Stop loading
-        dispatch({ type: STOP_VOTE_LOADING });
-        props.history.push(`/surveys/${surveyState.survey._id}/results`);
+        setVoteLoading(false);
+        props.history.push(`/surveys/${survey._id}/results`);
       })
       .catch((err) => {
         // Set error
-        dispatch({
-          type: SET_VALUES,
-          payload: { error: err.response.data.error },
-        });
+        setError(err.response.data.error);
         // Stop loading
-        dispatch({ type: STOP_VOTE_LOADING });
+        setVoteLoading(false);
       });
   };
 
   // Answers change state update
   const handleAnswerChange = (answerId) => {
-    const { survey } = surveyState;
-
     const updatedAnswers = survey.answers.map((answer) => {
       if (answer.id === answerId) {
-        if (surveyState.survey.multipleAnswers) {
+        if (survey.multipleAnswers) {
           // Multiple answer
           return {
             ...answer,
@@ -154,7 +117,7 @@ export default function VoteSurvey(props) {
           };
         }
       } else {
-        if (surveyState.survey.multipleAnswers) {
+        if (survey.multipleAnswers) {
           // Multiple answer
           return answer;
         } else {
@@ -166,22 +129,19 @@ export default function VoteSurvey(props) {
         }
       }
     });
-
-    dispatch({
-      type: SET_VALUES,
-      payload: {
-        survey: {
-          ...survey,
-          answers: updatedAnswers,
-        },
-      },
-    });
+    
+    setSurvey(survey =>  {
+        return {
+        ...survey,
+        answers: updatedAnswers
+      }
+    })
   };
 
   return (
     <>
-      {surveyState.error ? (
-        <Error message={surveyState.error} />
+      {error ? (
+        <Error message={error} />
       ) : (
         <Card border="dark">
           <Card.Header className="text-center">
@@ -190,18 +150,18 @@ export default function VoteSurvey(props) {
             </h4>
           </Card.Header>
           <Card.Body className="px-md-4">
-            {surveyState.surveyLoading ? (
+            {surveyLoading ? (
               <Spinner animation="border" className="m-auto d-block" />
             ) : (
               <>
                 <SurveyCardHeader />
                 <Form className="mt-4" onSubmit={handleSubmit}>
-                  {surveyState.survey.answers &&
-                    surveyState.survey.answers.map((answer) => (
+                  {survey.answers &&
+                    survey.answers.map((answer) => (
                       <Form.Group key={answer.id}>
                         <Form.Check
                           type={
-                            surveyState.survey.multipleAnswers
+                            survey.multipleAnswers
                               ? "checkbox"
                               : "radio"
                           }
@@ -217,16 +177,16 @@ export default function VoteSurvey(props) {
                       type="submit"
                       variant="primary"
                       className="px-5"
-                      disabled={surveyState.isValid ? false : true}
+                      disabled={valid ? false : true}
                     >
-                      {surveyState.voteLoading ? (
+                      {voteLoading ? (
                         <Spinner animation="border" className="m-auto d-block" />
                       ) : (
                         <p>Vote</p>
                       )}
                     </Button>
                     <div className="d-flex justify-content-between mt-md-0 mt-3">
-                      <Link to={`/surveys/${surveyState.survey._id}/results`}>
+                      <Link to={`/surveys/${survey._id}/results`}>
                         <Button
                           type="button"
                           variant="info"
