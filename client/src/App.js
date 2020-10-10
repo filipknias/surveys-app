@@ -15,7 +15,6 @@ import ResultsSurvey from "./pages/ResultsSurvey";
 // Context
 import { UserProvider } from "./context/UserContext";
 import { FormProvider } from "./context/FormContext";
-import { SurveyProvider } from "./context/SurveyContext";
 
 function App() {
   return (
@@ -27,13 +26,11 @@ function App() {
             <Route exact path="/" component={Home} />
             <Route path="/explore" component={Explore} />
           </Switch>
-          <SurveyProvider>
             <Route path="/surveys/:surveyId/vote" component={VoteSurvey} />
             <Route
               path="/surveys/:surveyId/results"
               component={ResultsSurvey}
             />
-          </SurveyProvider>
           <FormProvider>
             <Route path="/create" component={CreateSurvey} />
           </FormProvider>

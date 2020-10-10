@@ -30,7 +30,6 @@ export default function VoteSurvey(props) {
     axios
       .get(`/api/surveys/get/${surveyId}`)
       .then((res) => {
-        
         // Set answers
         const answersState = res.data.answers.map((answer) => {
           return {

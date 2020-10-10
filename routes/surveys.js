@@ -46,15 +46,22 @@ router.post("/create", verifyToken, async (req, res) => {
 // GET /api/surveys/get
 // Get all surveys by given queries
 router.get("/get", async (req, res) => {
-  const limit = parseInt(req.query.limit) || 20;
-  try {
-    const survey = await Survey.find({
-      status: "public",
-    })
-      .sort({ [req.query.sort]: -1 })
-      .limit(limit);
+  let query = Survey.find({ status: 'public' });
 
-    return res.status(200).json(survey);
+    if (req.query.title && req.query.title !== "") {
+      query = query.regex('title', new RegExp(req.query.title, 'i'));
+    }
+
+    if (req.query.sort) {
+      query = query.sort({ [req.query.sort]: -1 });
+    }
+
+    if (req.query.limit) {
+      query = query.limit(parseInt(req.query.limit));
+    }
+  try {
+    const surveys = await query.exec();
+    return res.status(200).json(surveys);
   } catch (err) {
     console.error(err);
     return res
