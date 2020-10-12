@@ -46,10 +46,8 @@ function Home() {
         <Error message={error} />
       ) : (
         <Card border="dark">
-          <Card.Header className="text-center">
-            <h4 className="my-2">
+          <Card.Header className="text-center" as="h4">
               Welcome on mySurveys<span className="green-text">.com</span>
-            </h4>
           </Card.Header>
           <Card.Body>
             <Row>

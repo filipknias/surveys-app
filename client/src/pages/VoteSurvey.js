@@ -143,10 +143,8 @@ export default function VoteSurvey(props) {
         <Error message={error} />
       ) : (
         <Card border="dark">
-          <Card.Header className="text-center">
-            <h4 className="my-2">
+          <Card.Header className="text-center" as="h4">
               Make a <span className="green-text">Vote</span>
-            </h4>
           </Card.Header>
           <Card.Body className="px-md-4">
             {surveyLoading ? (

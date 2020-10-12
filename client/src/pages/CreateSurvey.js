@@ -155,11 +155,9 @@ export default function CreateSurvey({ history }) {
             </Alert>
           )}
           <Card border="dark">
-            <Card.Header className="text-center">
-              <h4 className="my-2">
+            <Card.Header className="text-center" as="h4">
                 Create your own{" "}
                 <span className="green-text">custom survey</span>
-              </h4>
             </Card.Header>
             <Card.Body className="px-md-5">
               {FormHeader()}

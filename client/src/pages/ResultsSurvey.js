@@ -151,10 +151,8 @@ export default function ResultsSurvey(props) {
         <Error message={error} />
       ) : (
         <Card border="dark">
-          <Card.Header className="text-center">
-            <h4 className="my-2">
+          <Card.Header className="text-center" as="h4">
               See <span className="green-text">Results</span>
-            </h4>
           </Card.Header>
           <Card.Body className="px-md-4">
             {loading ? (

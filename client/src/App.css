@@ -43,6 +43,10 @@ a:hover {
   margin: 0 !important;
 }
 
+.card-header {
+  padding: 1rem 0;
+}
+
 @media screen and (max-width: 768px) {
   .container {
     padding: 1rem !important;
