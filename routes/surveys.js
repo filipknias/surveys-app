@@ -48,20 +48,52 @@ router.post("/create", verifyToken, async (req, res) => {
 router.get("/get", async (req, res) => {
   let query = Survey.find({ status: 'public' });
 
+  const response = {};
+
+  const limit = parseInt(req.query.limit);
+  const page = parseInt(req.query.page);
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+    // Searching surveys by title
     if (req.query.title && req.query.title !== "") {
       query = query.regex('title', new RegExp(req.query.title, 'i'));
     }
 
+    // Sorting surveys
     if (req.query.sort) {
       query = query.sort({ [req.query.sort]: -1 });
     }
 
+    // Pagination
+    if (req.query.page && req.query.limit) {
+      const queriedSurveysCount = await Survey.countDocuments(query).exec();
+
+      if (startIndex > 0) {
+        response.previous = {
+          page: page - 1,
+          limit: limit
+        }
+      }
+
+      if (endIndex < queriedSurveysCount) {
+        response.next = {
+          page: page + 1,
+          limit: limit
+        }
+      }
+
+      query = query.skip(startIndex);
+    }
+
+    // Limit results
     if (req.query.limit) {
-      query = query.limit(parseInt(req.query.limit));
+      query = query.limit(limit);
     }
   try {
-    const surveys = await query.exec();
-    return res.status(200).json(surveys);
+    response.surveys = await query.exec();
+    return res.status(200).json(response);
   } catch (err) {
     console.error(err);
     return res

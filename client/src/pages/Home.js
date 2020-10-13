@@ -21,7 +21,7 @@ function Home() {
     axios
       .get("api/surveys/get?sort=createdAt&limit=5")
       .then((res) => {
-        setLatestSurveys(res.data);
+        setLatestSurveys(res.data.surveys);
         setLoading(false);
       })
       .catch((err) => {
@@ -32,7 +32,7 @@ function Home() {
     axios
       .get("api/surveys/get?sort=votesCount&limit=5")
       .then((res) => {
-        setPopularSurveys(res.data);
+        setPopularSurveys(res.data.surveys);
         setLoading(false);
       })
       .catch((err) => {
