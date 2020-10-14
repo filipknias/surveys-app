@@ -4,6 +4,7 @@ import axios from "axios";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
+import Spinner from "react-bootstrap/Spinner";
 // Components
 import SurveysList from "../components/surveys/SurveysList";
 import Error from "../components/Error";
@@ -53,11 +54,19 @@ function Home() {
             <Row>
               <Col md={6}>
                 <h3 className="text-center mb-4">Latest Surveys</h3>
-                <SurveysList surveys={latestSurveys} loading={loading} />
+                {loading ? (
+                  <Spinner animation="border" className="m-auto d-block" />
+                ) : (
+                  <SurveysList surveys={latestSurveys} />
+                )}  
               </Col>
               <Col md={6}>
                 <h3 className="text-center mb-4">Popular Surveys</h3>
-                <SurveysList surveys={popularSurveys} loading={loading} />
+                {loading ? (
+                  <Spinner animation="border" className="m-auto d-block" />
+                ) : (
+                  <SurveysList surveys={popularSurveys} />
+                )}  
               </Col>
             </Row>
           </Card.Body>

@@ -3,14 +3,11 @@ import { Link } from "react-router-dom";
 // Bootstrap
 import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
-import Spinner from "react-bootstrap/Spinner";
 // Images
 import PieChart from "../img/pie-chart.svg";
 
-function SurveysList({ surveys, loading }) {
+function SurveysList({ surveys }) {
   return (
-    <>
-      {loading && <Spinner animation="border" className="m-auto d-block" />}
       <ListGroup>
         {surveys.map((survey) => (
           <Link to={`/surveys/${survey._id}/vote`} key={survey._id}>
@@ -29,7 +26,6 @@ function SurveysList({ surveys, loading }) {
           </Link>
         ))}
       </ListGroup>
-    </>
   );
 }
 
