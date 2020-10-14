@@ -43,8 +43,8 @@ a:hover {
   margin: 0 !important;
 }
 
-.card-header {
-  padding: 1rem 0;
+.nav-tabs {
+  border-bottom: 1px solid #dee2e6;
 }
 
 @media screen and (max-width: 768px) {

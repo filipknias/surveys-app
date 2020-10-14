@@ -12,6 +12,7 @@ import Explore from "./pages/Explore";
 import CreateSurvey from "./pages/CreateSurvey";
 import VoteSurvey from "./pages/VoteSurvey";
 import ResultsSurvey from "./pages/ResultsSurvey";
+import Profile from "./pages/Profile";
 // Context
 import { UserProvider } from "./context/UserContext";
 import { FormProvider } from "./context/FormContext";
@@ -25,15 +26,16 @@ function App() {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route path="/explore" component={Explore} />
-          </Switch>
             <Route path="/surveys/:surveyId/vote" component={VoteSurvey} />
             <Route
               path="/surveys/:surveyId/results"
               component={ResultsSurvey}
             />
-          <FormProvider>
-            <Route path="/create" component={CreateSurvey} />
-          </FormProvider>
+            <Route path="/users/:userId" component={Profile} />
+            <FormProvider>
+              <Route path="/create" component={CreateSurvey} />
+            </FormProvider>
+          </Switch>
         </Container>
       </Router>
     </UserProvider>
