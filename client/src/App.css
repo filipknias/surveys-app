@@ -39,12 +39,22 @@ a:hover {
   align-self: center;
 }
 
+.dropdown-item a {
+  color: #212529;
+}
+
 .dropdown-toggle {
   margin: 0 !important;
 }
 
 .nav-tabs {
   border-bottom: 1px solid #dee2e6;
+}
+
+.profile-label {
+  color: #24a021;
+  text-transform: uppercase;
+  font-size: 0.9rem;
 }
 
 @media screen and (max-width: 768px) {

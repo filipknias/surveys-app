@@ -5,6 +5,7 @@ import SurveyInfoForm from "../components/forms/SurveyInfoForm";
 import SurveyAnswersForm from "../components/forms/SurveyAnswersForm";
 import SurveyOptionsForm from "../components/forms/SurveyOptionsForm";
 import Error from "../components/Error";
+import AuthError from "../components/AuthError";
 // Bootstrap
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -145,48 +146,43 @@ export default function CreateSurvey({ history }) {
         <Error message={formState.errors.general} />
       ) : (
         <>
-          {!userState.isAuth && (
-            <Alert variant="danger">
-              <Alert.Heading>Sign in to get more advantages!</Alert.Heading>
-              <p>
-                To be able to create surveys you need to create a free account
-                or sign in by clicking on the navbar button.
-              </p>
-            </Alert>
+          {!userState.isAuth ? (
+            <AuthError />
+          ) : (
+            <Card border="dark">
+              <Card.Header className="text-center" as="h4">
+                  Create your own{" "}
+                  <span className="green-text">custom survey</span>
+              </Card.Header>
+              <Card.Body className="px-md-5">
+                {FormHeader()}
+                <Form onSubmit={handleSubmit}>{FormContent()}</Form>
+                <div className="d-flex justify-content-between mt-5">
+                  {formState.currentStep > 1 && (
+                    <Button
+                      variant="outline-primary"
+                      size="lg"
+                      className="px-5"
+                      onClick={() => dispatch({ type: PREV_STEP })}
+                    >
+                      Prev
+                    </Button>
+                  )}
+                  {formState.currentStep < formState.steps.length && (
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      className="px-5 ml-auto"
+                      onClick={() => dispatch({ type: NEXT_STEP })}
+                      disabled={formState.isValid ? false : true}
+                    >
+                      Next
+                    </Button>
+                  )}
+                </div>
+              </Card.Body>
+            </Card>
           )}
-          <Card border="dark">
-            <Card.Header className="text-center" as="h4">
-                Create your own{" "}
-                <span className="green-text">custom survey</span>
-            </Card.Header>
-            <Card.Body className="px-md-5">
-              {FormHeader()}
-              <Form onSubmit={handleSubmit}>{FormContent()}</Form>
-              <div className="d-flex justify-content-between mt-5">
-                {formState.currentStep > 1 && (
-                  <Button
-                    variant="outline-primary"
-                    size="lg"
-                    className="px-5"
-                    onClick={() => dispatch({ type: PREV_STEP })}
-                  >
-                    Prev
-                  </Button>
-                )}
-                {formState.currentStep < formState.steps.length && (
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className="px-5 ml-auto"
-                    onClick={() => dispatch({ type: NEXT_STEP })}
-                    disabled={formState.isValid ? false : true}
-                  >
-                    Next
-                  </Button>
-                )}
-              </div>
-            </Card.Body>
-          </Card>
         </>
       )}
     </>

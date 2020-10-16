@@ -50,6 +50,7 @@ function NavbarComponent() {
   }, []);
 
   const handleLogout = () => {
+    setOpen(false);
     dispatch({ type: CLEAR_USER });
     localStorage.removeItem("auth-token");
   };
@@ -93,14 +94,16 @@ function NavbarComponent() {
                   {userState.user.email}
                 </p>
                 <NavDropdown.Divider />
-                <NavDropdown.Item>
-                  <Image
-                    src={AccountDropdownIcon}
-                    height="20"
-                    className="mr-2"
-                  />
-                  Account
-                </NavDropdown.Item>
+                <Link to={`/users/${userState.user._id}`} onClick={() => setOpen(false)}>
+                  <NavDropdown.Item as="div">
+                      <Image
+                        src={AccountDropdownIcon}
+                        height="20"
+                        className="mr-2"
+                      />
+                      Account
+                  </NavDropdown.Item>
+                </Link>
                 <NavDropdown.Item onClick={handleLogout}>
                   <Image
                     src={LogoutDropdownIcon}

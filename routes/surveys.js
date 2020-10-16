@@ -116,6 +116,20 @@ router.get("/get/:id", checkExpirationDate, async (req, res) => {
   }
 });
 
+// GET /api/surveys/:userId
+// Get all surveys created by given user
+router.get('/:userId', async (req, res) => {
+  try {
+    const surveys = await Survey.find({ author: req.params.userId });
+    return res.status(200).json(surveys);
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ error: "Could not load the resources. Please try again." });
+  }
+});
+
 // PUT /api/surveys/:id
 // Edit survey with given id
 router.put("/:id", verifyToken, async (req, res) => {
