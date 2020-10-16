@@ -75,6 +75,7 @@ export default function ResultsSurvey(props) {
         setLoading(false);
       })
       .catch((err) => {
+        console.log(err)
         // Set error
         setError(err.response.data.error);
         // Stop loading
@@ -160,7 +161,7 @@ export default function ResultsSurvey(props) {
             ) : (
               <>
                 {survey.author && (
-                  <SurveyCardHeader survey={survey} />
+                    <SurveyCardHeader survey={survey} />
                 )}
                 <h4 className="my-3">
                   Total Votes:{" "}
