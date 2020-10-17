@@ -6,7 +6,10 @@ const Survey = require("../models/Survey");
 const Vote = require("../models/Vote");
 
 // Middleware
-const checkExpirationDate = require("../utilities/checkExpirationDate");
+const {
+  expirationDateMiddleware,
+  expirationDateFunc,
+} = require("../utilities/checkExpirationDate");
 const verifyToken = require("../utilities/verifyToken");
 
 // POST /api/surveys/create
@@ -46,7 +49,7 @@ router.post("/create", verifyToken, async (req, res) => {
 // GET /api/surveys/get
 // Get all surveys by given queries
 router.get("/get", async (req, res) => {
-  let query = Survey.find({ status: 'public' });
+  let query = Survey.find({ status: "public" });
 
   const response = {};
 
@@ -56,43 +59,45 @@ router.get("/get", async (req, res) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 
-    // Searching surveys by title
-    if (req.query.title && req.query.title !== "") {
-      query = query.regex('title', new RegExp(req.query.title, 'i'));
+  // Searching surveys by title
+  if (req.query.title && req.query.title !== "") {
+    query = query.regex("title", new RegExp(req.query.title, "i"));
+  }
+
+  // Sorting surveys
+  if (req.query.sort) {
+    query = query.sort({ [req.query.sort]: -1 });
+  }
+
+  // Pagination
+  if (req.query.page && req.query.limit) {
+    const queriedSurveysCount = await Survey.countDocuments(query).exec();
+
+    if (startIndex > 0) {
+      response.previous = {
+        page: page - 1,
+        limit: limit,
+      };
     }
 
-    // Sorting surveys
-    if (req.query.sort) {
-      query = query.sort({ [req.query.sort]: -1 });
+    if (endIndex < queriedSurveysCount) {
+      response.next = {
+        page: page + 1,
+        limit: limit,
+      };
     }
 
-    // Pagination
-    if (req.query.page && req.query.limit) {
-      const queriedSurveysCount = await Survey.countDocuments(query).exec();
+    query = query.skip(startIndex);
+  }
 
-      if (startIndex > 0) {
-        response.previous = {
-          page: page - 1,
-          limit: limit
-        }
-      }
-
-      if (endIndex < queriedSurveysCount) {
-        response.next = {
-          page: page + 1,
-          limit: limit
-        }
-      }
-
-      query = query.skip(startIndex);
-    }
-
-    // Limit results
-    if (req.query.limit) {
-      query = query.limit(limit);
-    }
+  // Limit results
+  if (req.query.limit) {
+    query = query.limit(limit);
+  }
   try {
     response.surveys = await query.exec();
+    // Check expiration date
+    await expirationDateFunc(response.surveys);
     return res.status(200).json(response);
   } catch (err) {
     console.error(err);
@@ -104,9 +109,9 @@ router.get("/get", async (req, res) => {
 
 // GET /api/surveys/get/:id
 // Get survey by id
-router.get("/get/:id", checkExpirationDate, async (req, res) => {
+router.get("/get/:surveyId", expirationDateMiddleware, async (req, res) => {
   try {
-    const survey = await Survey.findById(req.params.id);
+    const survey = await Survey.findById(req.params.surveyId);
     return res.status(200).json(survey);
   } catch (err) {
     console.error(err);
@@ -118,9 +123,11 @@ router.get("/get/:id", checkExpirationDate, async (req, res) => {
 
 // GET /api/surveys/:userId
 // Get all surveys created by given user
-router.get('/:userId', async (req, res) => {
+router.get("/users/:userId", async (req, res) => {
   try {
     const surveys = await Survey.find({ author: req.params.userId });
+    // Check expiration date
+    await expirationDateFunc(surveys);
     return res.status(200).json(surveys);
   } catch (err) {
     console.log(err);

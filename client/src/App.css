@@ -20,6 +20,10 @@ a:hover {
   color: #343a40;
 }
 
+.btn > a {
+  color: white;
+}
+
 .green-text {
   color: #24a021;
 }
@@ -56,6 +60,10 @@ a:hover {
   text-transform: uppercase;
   font-size: 0.8rem;
   font-weight: 500;
+}
+
+table td {
+  align-items: center !important;
 }
 
 @media screen and (max-width: 768px) {

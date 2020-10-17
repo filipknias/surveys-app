@@ -6,17 +6,19 @@ const Vote = require("../models/Vote");
 const Survey = require("../models/Survey");
 
 // Middleware
-const checkExpirationDate = require("../utilities/checkExpirationDate");
+const {
+  expirationDateMiddleware,
+} = require("../utilities/checkExpirationDate");
 
 // POST /api/votes/:surveyId
 // Send a vote to survey with given id
-router.post("/:id", checkExpirationDate, async (req, res) => {
+router.post("/:surveyId", expirationDateMiddleware, async (req, res) => {
   const vote = new Vote({
-    survey: req.params.id,
+    survey: req.params.surveyId,
     answers: req.body.answers,
   });
   try {
-    const survey = await Survey.findById(req.params.id);
+    const survey = await Survey.findById(req.params.surveyId);
     // Update votes count
     await survey.updateOne({
       $inc: { votesCount: req.body.answers.length },
@@ -34,9 +36,9 @@ router.post("/:id", checkExpirationDate, async (req, res) => {
 
 // GET /api/votes/:surveyId
 // Get all votes sended to survey with given id
-router.get("/:id", async (req, res) => {
+router.get("/:surveyId", async (req, res) => {
   try {
-    const votes = await Vote.find({ survey: req.params.id });
+    const votes = await Vote.find({ survey: req.params.surveyId });
     res.status(200).json(votes);
   } catch (err) {
     console.log(err);

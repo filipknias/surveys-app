@@ -1,35 +1,88 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 // Bootstrap
-import Card from 'react-bootstrap/Card';
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
+import Card from "react-bootstrap/Card";
+import Tabs from "react-bootstrap/Tabs";
+import Tab from "react-bootstrap/Tab";
+import Spinner from "react-bootstrap/Spinner";
 // Components
 import Overview from "../components/profile/Overview";
+import ProfileSurveys from "../components/profile/ProfileSurveys";
+import Error from "../components/Error";
 
 export default function Profile(props) {
-    const userId = props.match.params.userId;
+  // State
+  const [user, setUser] = useState({});
+  const [surveys, setSurveys] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    return (
+  const userId = props.match.params.userId;
+
+  // Fetch all data
+  useEffect(() => {
+    // Start loading
+    setLoading(true);
+    axios
+      .get(`/api/users/${userId}`)
+      .then((res) => {
+        // Set user
+        setUser(res.data);
+        // Stop loading
+        setLoading(false);
+      })
+      .catch((err) => {
+        // Set error
+        setError(err.response.data.error);
+        // Stop loading
+        setLoading(false);
+      });
+
+    axios
+      .get(`/api/surveys/users/${userId}`)
+      .then((res) => {
+        // Set surveys
+        setSurveys(res.data);
+        // Stop loading
+        setLoading(false);
+      })
+      .catch((err) => {
+        // Set error
+        setError(err.response.data.error);
+        // Stop loading
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <>
+      {error ? (
+        <Error message={error} />
+      ) : (
         <Card border="dark">
-            <Card.Header className="text-center" as="h4">
-                Profile <span className="green-text">Details</span>
-            </Card.Header>
-            <Card.Body className="px-md-5">
-                <Tabs 
-                    defaultActiveKey="overview" 
-                    id="profile-tabs" 
-                    className="mb-5"
-                >
-                    <Tab eventKey="overview" title="Overview">
-                        <Overview userId={userId} />
-                    </Tab>
-                    <Tab eventKey="surveys" title="Surveys">
-                        <h4>
-                            Surveys
-                        </h4>
-                    </Tab>
-                </Tabs>  
-            </Card.Body>
+          <Card.Header className="text-center" as="h4">
+            Profile <span className="green-text">Details</span>
+          </Card.Header>
+          <Card.Body className="px-md-5">
+            {loading ? (
+              <Spinner animation="border" className="mx-auto d-block" />
+            ) : (
+              <Tabs
+                defaultActiveKey="surveys"
+                id="profile-tabs"
+                className="mb-5"
+              >
+                <Tab eventKey="overview" title="Overview">
+                  <Overview user={user} surveys={surveys} />
+                </Tab>
+                <Tab eventKey="surveys" title="Surveys">
+                  <ProfileSurveys user={user} surveys={surveys} />
+                </Tab>
+              </Tabs>
+            )}
+          </Card.Body>
         </Card>
-    )
+      )}
+    </>
+  );
 }

@@ -15,7 +15,7 @@ export default function Error({ message }) {
           Close
         </Button>
       </Link>
-      <Button
+      <Button 
         variant="outline-danger"
         className="px-5 ml-4"
         onClick={() => document.location.reload()}

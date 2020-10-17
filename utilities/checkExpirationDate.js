@@ -1,8 +1,10 @@
 const Survey = require("../models/Survey");
 
-module.exports = async (req, res, next) => {
+// Middleware
+// Check one survey based on surveyId param
+exports.expirationDateMiddleware = async (req, res, next) => {
   try {
-    const survey = await Survey.findById(req.params.id);
+    const survey = await Survey.findById(req.params.surveyId);
     // Check expiration date
     if (
       survey.expirationDate &&
@@ -19,6 +21,31 @@ module.exports = async (req, res, next) => {
     } else {
       return next();
     }
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ error: "Problem with processing a survey. Please try again." });
+  }
+};
+
+exports.expirationDateFunc = (surveys) => {
+  try {
+    surveys.forEach(async (survey) => {
+      // Check expiration date
+      if (
+        survey.expirationDate &&
+        Date.now() > Date.parse(survey.expirationDate)
+      ) {
+        // Change survey status to closed
+        if (survey.status !== "closed") {
+          await Survey.updateOne(
+            { _id: survey._id },
+            { $set: { status: "closed" } }
+          );
+        }
+      }
+    });
   } catch (err) {
     console.error(err);
     return res
