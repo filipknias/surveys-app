@@ -7,10 +7,11 @@ const Vote = require("../models/Vote");
 
 // Middleware
 const {
-  expirationDateMiddleware,
-  expirationDateFunc,
+  checkExpirationDate,
+  checkExpirationDateCollection,
 } = require("../utilities/checkExpirationDate");
 const verifyToken = require("../utilities/verifyToken");
+const paginateResults = require("../utilities/pagination");
 
 // POST /api/surveys/create
 // Create Survey and Save in DB
@@ -56,9 +57,6 @@ router.get("/get", async (req, res) => {
   const limit = parseInt(req.query.limit);
   const page = parseInt(req.query.page);
 
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-
   // Searching surveys by title
   if (req.query.title && req.query.title !== "") {
     query = query.regex("title", new RegExp(req.query.title, "i"));
@@ -72,22 +70,16 @@ router.get("/get", async (req, res) => {
   // Pagination
   if (req.query.page && req.query.limit) {
     const queriedSurveysCount = await Survey.countDocuments(query).exec();
+    const paginatedResults = paginateResults(queriedSurveysCount, page, limit);
+    query = query.skip(paginatedResults.startIndex);
 
-    if (startIndex > 0) {
-      response.previous = {
-        page: page - 1,
-        limit: limit,
-      };
+    if (paginatedResults.previous) {
+      response.previous = paginatedResults.previous;
     }
 
-    if (endIndex < queriedSurveysCount) {
-      response.next = {
-        page: page + 1,
-        limit: limit,
-      };
+    if (paginatedResults.next) {
+      response.next = paginatedResults.next;
     }
-
-    query = query.skip(startIndex);
   }
 
   // Limit results
@@ -95,9 +87,9 @@ router.get("/get", async (req, res) => {
     query = query.limit(limit);
   }
   try {
-    response.surveys = await query.exec();
+    response.results = await query.exec();
     // Check expiration date
-    await expirationDateFunc(response.surveys);
+    await checkExpirationDateCollection(response.results);
     return res.status(200).json(response);
   } catch (err) {
     console.error(err);
@@ -109,7 +101,7 @@ router.get("/get", async (req, res) => {
 
 // GET /api/surveys/get/:id
 // Get survey by id
-router.get("/get/:surveyId", expirationDateMiddleware, async (req, res) => {
+router.get("/get/:surveyId", checkExpirationDate, async (req, res) => {
   try {
     const survey = await Survey.findById(req.params.surveyId);
     return res.status(200).json(survey);
@@ -124,13 +116,49 @@ router.get("/get/:surveyId", expirationDateMiddleware, async (req, res) => {
 // GET /api/surveys/:userId
 // Get all surveys created by given user
 router.get("/users/:userId", async (req, res) => {
+  let query = Survey.find({ author: req.params.userId });
+
+  const response = {};
+
+  const limit = parseInt(req.query.limit);
+  const page = parseInt(req.query.page);
+
+  // Searching surveys by title
+  if (req.query.title && req.query.title !== "") {
+    query = query.regex("title", new RegExp(req.query.title, "i"));
+  }
+
+  // Sorting surveys
+  if (req.query.sort) {
+    query = query.sort({ [req.query.sort]: -1 });
+  }
+
+  // Pagination
+  if (req.query.page && req.query.limit) {
+    const queriedSurveysCount = await Survey.countDocuments(query).exec();
+    const paginatedResults = paginateResults(queriedSurveysCount, page, limit);
+    query = query.skip(paginatedResults.startIndex);
+
+    if (paginatedResults.previous) {
+      response.previous = paginatedResults.previous;
+    }
+
+    if (paginatedResults.next) {
+      response.next = paginatedResults.next;
+    }
+  }
+
+  // Limit results
+  if (req.query.limit) {
+    query = query.limit(limit);
+  }
   try {
-    const surveys = await Survey.find({ author: req.params.userId });
+    response.results = await query.exec();
     // Check expiration date
-    await expirationDateFunc(surveys);
-    return res.status(200).json(surveys);
+    await checkExpirationDateCollection(response.results);
+    return res.status(200).json(response);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res
       .status(500)
       .json({ error: "Could not load the resources. Please try again." });

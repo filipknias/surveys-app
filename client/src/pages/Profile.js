@@ -42,7 +42,7 @@ export default function Profile(props) {
       .get(`/api/surveys/users/${userId}`)
       .then((res) => {
         // Set surveys
-        setSurveys(res.data);
+        setSurveys(res.data.results);
         // Stop loading
         setLoading(false);
       })

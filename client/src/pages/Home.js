@@ -22,7 +22,7 @@ function Home() {
     axios
       .get("api/surveys/get?sort=createdAt&limit=5")
       .then((res) => {
-        setLatestSurveys(res.data.surveys);
+        setLatestSurveys(res.data.results);
         setLoading(false);
       })
       .catch((err) => {
@@ -33,7 +33,7 @@ function Home() {
     axios
       .get("api/surveys/get?sort=votesCount&limit=5")
       .then((res) => {
-        setPopularSurveys(res.data.surveys);
+        setPopularSurveys(res.data.results);
         setLoading(false);
       })
       .catch((err) => {
@@ -48,7 +48,7 @@ function Home() {
       ) : (
         <Card border="dark">
           <Card.Header className="text-center" as="h4">
-              Welcome on mySurveys<span className="green-text">.com</span>
+            Welcome on mySurveys<span className="green-text">.com</span>
           </Card.Header>
           <Card.Body>
             <Row>
@@ -58,7 +58,7 @@ function Home() {
                   <Spinner animation="border" className="m-auto d-block" />
                 ) : (
                   <SurveysList surveys={latestSurveys} />
-                )}  
+                )}
               </Col>
               <Col md={6}>
                 <h3 className="text-center mb-4">Popular Surveys</h3>
@@ -66,7 +66,7 @@ function Home() {
                   <Spinner animation="border" className="m-auto d-block" />
                 ) : (
                   <SurveysList surveys={popularSurveys} />
-                )}  
+                )}
               </Col>
             </Row>
           </Card.Body>

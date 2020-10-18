@@ -2,7 +2,7 @@ const Survey = require("../models/Survey");
 
 // Middleware
 // Check one survey based on surveyId param
-exports.expirationDateMiddleware = async (req, res, next) => {
+exports.checkExpirationDate = async (req, res, next) => {
   try {
     const survey = await Survey.findById(req.params.surveyId);
     // Check expiration date
@@ -29,7 +29,7 @@ exports.expirationDateMiddleware = async (req, res, next) => {
   }
 };
 
-exports.expirationDateFunc = (surveys) => {
+exports.checkExpirationDateCollection = (surveys) => {
   try {
     surveys.forEach(async (survey) => {
       // Check expiration date

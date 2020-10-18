@@ -6,13 +6,11 @@ const Vote = require("../models/Vote");
 const Survey = require("../models/Survey");
 
 // Middleware
-const {
-  expirationDateMiddleware,
-} = require("../utilities/checkExpirationDate");
+const { checkExpirationDate } = require("../utilities/checkExpirationDate");
 
 // POST /api/votes/:surveyId
 // Send a vote to survey with given id
-router.post("/:surveyId", expirationDateMiddleware, async (req, res) => {
+router.post("/:surveyId", checkExpirationDate, async (req, res) => {
   const vote = new Vote({
     survey: req.params.surveyId,
     answers: req.body.answers,
