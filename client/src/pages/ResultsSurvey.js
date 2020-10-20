@@ -12,7 +12,7 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import ProgressBar from "react-bootstrap/ProgressBar";
 // Images
-import ResultsIcon from "../components/img/results-icon.svg";
+import VoteIcon from "../components/img/vote-icon.svg";
 
 export default function ResultsSurvey(props) {
   // State
@@ -52,7 +52,7 @@ export default function ResultsSurvey(props) {
         setLoading(false);
       });
   }, []);
-  
+
   // Set votes
   useEffect(() => {
     // Check if survey is fetched
@@ -75,7 +75,7 @@ export default function ResultsSurvey(props) {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         // Set error
         setError(err.response.data.error);
         // Stop loading
@@ -124,10 +124,7 @@ export default function ResultsSurvey(props) {
       return {
         answer: answersValues[index],
         votesCount: vote.length,
-        progressBarLabel: calcProgress(
-          vote.length,
-          survey.votesCount
-        ),
+        progressBarLabel: calcProgress(vote.length, survey.votesCount),
       };
     });
 
@@ -153,36 +150,32 @@ export default function ResultsSurvey(props) {
       ) : (
         <Card border="dark">
           <Card.Header className="text-center" as="h4">
-              See <span className="green-text">Results</span>
+            See <span className="green-text">Results</span>
           </Card.Header>
           <Card.Body className="px-md-4">
             {loading ? (
               <Spinner animation="border" className="m-auto d-block" />
             ) : (
               <>
-                {survey.author && (
-                    <SurveyCardHeader survey={survey} />
-                )}
+                {survey.author && <SurveyCardHeader survey={survey} />}
                 <h4 className="my-3">
                   Total Votes:{" "}
-                  <span className="green-text">
-                    {survey.votesCount}
-                  </span>
+                  <span className="green-text">{survey.votesCount}</span>
                 </h4>
                 {votes.map((vote, index) => (
                   <div className="my-4" key={index}>
                     <p className="mb-1">{vote.answer}</p>
-                      <ProgressBar
+                    <ProgressBar
                       now={vote.progressBarLabel}
                       label={`${vote.progressBarLabel}%`}
                       variant={progressBarColors[index]}
-                    /> 
+                    />
                   </div>
                 ))}
                 <div className="d-flex justify-content-between justify-content-md-end mt-5">
                   <Link to={`/surveys/${survey._id}/vote`}>
                     <Button type="button" variant="info" className=" mr-4 px-5">
-                      <Image src={ResultsIcon} height="18" className="mr-2" />
+                      <Image src={VoteIcon} height="18" className="mr-2" />
                       Vote
                     </Button>
                   </Link>

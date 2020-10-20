@@ -11,6 +11,11 @@ import ProfilePopover from "../profile/ProfilePopover";
 import { UserContext } from "../../context/UserContext";
 // Images
 import EditIcon from "../img/edit-icon.svg";
+// Functions
+import {
+  formatExpirationDate,
+  formatCreatedAtDate,
+} from "../functions/dateFormatting";
 
 export default function SurveyCardHeader({ survey }) {
   // Context
@@ -36,25 +41,9 @@ export default function SurveyCardHeader({ survey }) {
     setCreatedAt(formatCreatedAtDate(survey.createdAt));
     // Set formatted expiration date if there is any
     if (survey.expirationDate) {
-      setExpirationDate(
-        formatExpirationDate(survey.expirationDate)
-      );
+      setExpirationDate(formatExpirationDate(survey.expirationDate));
     }
   }, []);
-  
-  // Format created at date
-  const formatCreatedAtDate = (date) => {
-    const dateString = new Date(date).toDateString();
-    const formattedDate = dateString.substr(3, dateString.length);
-    return formattedDate;
-  };
-
-  // Format expiration date
-  const formatExpirationDate = (date) => {
-    const dateString = new Date(date).toLocaleString();
-    const formattedDate = dateString.substr(0, dateString.length - 3);
-    return formattedDate;
-  };
 
   return (
     <>
@@ -72,9 +61,9 @@ export default function SurveyCardHeader({ survey }) {
           )}
           <Card.Subtitle className="text-muted">
             {author && (
-                <>
-                  {createdAt} - by <ProfilePopover user={author} />
-                </>
+              <>
+                {createdAt} - by <ProfilePopover user={author} />
+              </>
             )}
           </Card.Subtitle>
         </div>

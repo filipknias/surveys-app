@@ -24,6 +24,16 @@ a:hover {
   color: white;
 }
 
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-group .btn {
+  border-radius: 0px;
+}
+
 .green-text {
   color: #24a021;
 }

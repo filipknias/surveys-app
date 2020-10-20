@@ -13,7 +13,7 @@ import Error from "../components/Error";
 export default function Profile(props) {
   // State
   const [user, setUser] = useState({});
-  const [surveys, setSurveys] = useState([]);
+  const [response, setResponse] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -39,10 +39,10 @@ export default function Profile(props) {
       });
 
     axios
-      .get(`/api/surveys/users/${userId}`)
+      .get(`/api/surveys/users/${userId}?page=1&limit=5`)
       .then((res) => {
-        // Set surveys
-        setSurveys(res.data.results);
+        // Set response
+        setResponse(res.data);
         // Stop loading
         setLoading(false);
       })
@@ -67,18 +67,22 @@ export default function Profile(props) {
             {loading ? (
               <Spinner animation="border" className="mx-auto d-block" />
             ) : (
-              <Tabs
-                defaultActiveKey="surveys"
-                id="profile-tabs"
-                className="mb-5"
-              >
-                <Tab eventKey="overview" title="Overview">
-                  <Overview user={user} surveys={surveys} />
-                </Tab>
-                <Tab eventKey="surveys" title="Surveys">
-                  <ProfileSurveys user={user} surveys={surveys} />
-                </Tab>
-              </Tabs>
+              <>
+                {response.results && (
+                  <Tabs
+                    defaultActiveKey="surveys"
+                    id="profile-tabs"
+                    className="mb-5"
+                  >
+                    <Tab eventKey="overview" title="Overview">
+                      <Overview user={user} surveys={response.results} />
+                    </Tab>
+                    <Tab eventKey="surveys" title="Surveys">
+                      <ProfileSurveys user={user} />
+                    </Tab>
+                  </Tabs>
+                )}
+              </>
             )}
           </Card.Body>
         </Card>

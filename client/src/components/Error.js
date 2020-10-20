@@ -10,18 +10,20 @@ export default function Error({ message }) {
       <Alert.Heading>Something went wrong...</Alert.Heading>
       <p>{message}</p>
       <hr />
-      <Link to="/" className="d-inline">
-        <Button variant="outline-danger" className="px-5">
-          Close
+      <div className="d-flex">
+        <Link to="/" className="d-inline">
+          <Button variant="outline-danger" className="px-5">
+            Close
+          </Button>
+        </Link>
+        <Button
+          variant="outline-danger"
+          className="px-5 ml-4"
+          onClick={() => document.location.reload()}
+        >
+          Refresh
         </Button>
-      </Link>
-      <Button 
-        variant="outline-danger"
-        className="px-5 ml-4"
-        onClick={() => document.location.reload()}
-      >
-        Refresh
-      </Button>
+      </div>
     </Alert>
   );
 }
