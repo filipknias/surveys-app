@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 // Components
 import SurveysList from "../components/surveys/SurveysList";
 import Error from "../components/Error";
 import SearchBar from "../components/surveys/SearchBar";
+import PaginationTabs from "../components/PaginationTabs";
 // Bootstrap
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import Pagination from "react-bootstrap/Pagination";
 import Spinner from "react-bootstrap/Spinner";
 // Images
 import NotFoundImage from "../components/img/not-found-image.svg";
@@ -71,41 +69,28 @@ export default function Explore() {
             ) : (
               <>
                 {response.results && response.results.length > 0 ? (
-                  <div className="mt-5">
-                    <>
-                      <SurveysList surveys={response.results} />
-                      <Pagination className="mt-4">
-                        {response.previous && (
-                          <Pagination.Item
-                            onClick={() =>
-                              setCurrentPage(response.previous.page)
-                            }
-                          >
-                            {response.previous.page}
-                          </Pagination.Item>
-                        )}
-                        <Pagination.Item active>{currentPage}</Pagination.Item>
-                        {response.next && (
-                          <Pagination.Item
-                            onClick={() => setCurrentPage(response.next.page)}
-                          >
-                            {response.next.page}
-                          </Pagination.Item>
-                        )}
-                      </Pagination>
-                    </>
-                  </div>
-                ) : (
                   <>
-                    <div className="my-5">
-                      <h4 className="text-center">No surveys found.</h4>
-                      <Image
-                        src={NotFoundImage}
-                        height="180"
-                        className="d-block mx-auto mt-4"
+                    <SurveysList surveys={response.results} />
+                    <div className="mt-5">
+                      <PaginationTabs
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        previousPage={
+                          response.previous ? response.previous : null
+                        }
+                        nextPage={response.next ? response.next : null}
                       />
                     </div>
                   </>
+                ) : (
+                  <div className="my-4">
+                    <h4 className="text-center">No surveys found.</h4>
+                    <Image
+                      src={NotFoundImage}
+                      height="180"
+                      className="d-block mx-auto mt-4"
+                    />
+                  </div>
                 )}
               </>
             )}

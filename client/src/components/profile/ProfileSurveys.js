@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 // Bootstrap
-import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 import Spinner from "react-bootstrap/Spinner";
 import Accordion from "react-bootstrap/Accordion";
 // Images
 import CollapseIcon from "../img/collapse-icon.svg";
+import NotFoundImage from "../img/not-found-image.svg";
 // Components
 import SearchBar from "../surveys/SearchBar";
 import Error from "../Error";
 import ProfileSurveysTable from "../profile/ProfileSurveysTable";
-// Functions
+import PaginationTabs from "../PaginationTabs";
 
 export default function ProfileSurveys({ user }) {
   // State
@@ -57,12 +57,13 @@ export default function ProfileSurveys({ user }) {
     getResponse();
   }, [user]);
 
+  // Get all the surveys created by given user
   const getResponse = () => {
     // Start loading
     setLoading(true);
     axios
       .get(
-        `/api/surveys/users/${user._id}?sort=createdAt&page=${currentPage}&limit=5`
+        `/api/surveys/users/${user._id}?sort=createdAt&page=${currentPage}&limit=3`
       )
       .then((res) => {
         // Clear error
@@ -74,6 +75,7 @@ export default function ProfileSurveys({ user }) {
       })
       .catch((err) => {
         // Set error
+        // setError(err.response.data.error);
         setError(err.response.data.error);
         // Stop loading
         setLoading(false);
@@ -104,25 +106,33 @@ export default function ProfileSurveys({ user }) {
               />
             </Accordion.Collapse>
           </Accordion>
-          <Button
-            variant="info"
-            className="mt-3 mb-4"
-            onClick={() => getResponse()}
-            block
-          >
-            Refresh Data
-          </Button>
 
           {loading ? (
             <Spinner animation="border" className="mx-auto d-block" />
           ) : (
             <>
-              {response.results && (
-                <ProfileSurveysTable surveys={response.results} />
+              {response.results && response.results.length > 0 ? (
+                <>
+                  <ProfileSurveysTable surveys={response.results} />
+                  <PaginationTabs
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    previousPage={response.previous ? response.previous : null}
+                    nextPage={response.next ? response.next : null}
+                  />
+                </>
+              ) : (
+                <div className="my-4">
+                  <h4 className="text-center">No surveys found.</h4>
+                  <Image
+                    src={NotFoundImage}
+                    height="180"
+                    className="d-block mx-auto mt-4"
+                  />
+                </div>
               )}
             </>
           )}
-          {/* Pagination */}
         </>
       )}
     </>

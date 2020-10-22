@@ -65,7 +65,7 @@ export default function SurveysTableRow({ surveys }) {
       </thead>
       <tbody>
         {surveys.map((survey) => (
-          <tr>
+          <tr key={survey._id}>
             <td className="d-flex">
               <Image
                 src={PieChart}

@@ -9,6 +9,7 @@ export default function SearchBar({
   searchRequest,
 }) {
   // State
+  const [query, setQuery] = useState("");
   const [title, setTitle] = useState("");
   const [valid, setValid] = useState(false);
   const [filter, setFilter] = useState("createdAt");
@@ -17,21 +18,27 @@ export default function SearchBar({
   // Submit searching
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Set current page to 1
+    // Reset current page state
     setCurrentPage(1);
-    // Make a search request
-    searchRequest(title, filter, currentPage, limit);
+    // Set query to title state
+    setQuery(title);
   };
 
-  // Make search request every time current page changes
+  // Make search request and reset current page every time when query changes
+  useEffect(() => {
+    // Reset current page state
+    setCurrentPage(1);
+    // Make a search request
+    searchRequest(query, filter, currentPage, limit);
+  }, [query]);
+
+  // Make search request every time current page, filter or limit changes
   useEffect(() => {
     // Make a search request
-    if (valid) {
-      searchRequest(title, filter, currentPage, limit);
-    }
+    searchRequest(query, filter, currentPage, limit);
   }, [currentPage, filter, limit]);
 
-  // Set page to 1 if filter or limit changes
+  // Reset current page every time filter or limit changes
   useEffect(() => {
     setCurrentPage(1);
   }, [filter, limit]);
@@ -41,6 +48,13 @@ export default function SearchBar({
     if (title.trim() === "") setValid(false);
     else setValid(true);
   }, [title]);
+
+  // Refresh search bar
+  const handleRefresh = () => {
+    setTitle("");
+    setQuery("");
+    setCurrentPage(1);
+  };
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -60,6 +74,15 @@ export default function SearchBar({
             disabled={valid ? false : true}
           >
             Search
+          </Button>
+          <Button
+            variant="info"
+            type="button"
+            className="ml-2 px-md-5"
+            onClick={handleRefresh}
+            disabled={query === "" ? true : false}
+          >
+            Clear
           </Button>
         </div>
       </Form.Group>
