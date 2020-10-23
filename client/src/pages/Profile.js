@@ -70,7 +70,7 @@ export default function Profile(props) {
               <>
                 {response.results && (
                   <Tabs
-                    defaultActiveKey="surveys"
+                    defaultActiveKey="overview"
                     id="profile-tabs"
                     className="mb-5"
                   >

@@ -54,16 +54,18 @@ export default function ProfileSurveys({ user }) {
 
   // Fetch all surveys
   useEffect(() => {
-    getResponse();
+    getSurveys();
   }, [user]);
 
   // Get all the surveys created by given user
-  const getResponse = () => {
+  const getSurveys = () => {
+    // Reset current page
+    setCurrentPage(1);
     // Start loading
     setLoading(true);
     axios
       .get(
-        `/api/surveys/users/${user._id}?sort=createdAt&page=${currentPage}&limit=3`
+        `/api/surveys/users/${user._id}?sort=createdAt&page=${currentPage}&limit=5`
       )
       .then((res) => {
         // Clear error
@@ -75,7 +77,6 @@ export default function ProfileSurveys({ user }) {
       })
       .catch((err) => {
         // Set error
-        // setError(err.response.data.error);
         setError(err.response.data.error);
         // Stop loading
         setLoading(false);
@@ -113,7 +114,12 @@ export default function ProfileSurveys({ user }) {
             <>
               {response.results && response.results.length > 0 ? (
                 <>
-                  <ProfileSurveysTable surveys={response.results} />
+                  <ProfileSurveysTable
+                    user={user}
+                    surveys={response.results}
+                    getSurveys={getSurveys}
+                    setError={setError}
+                  />
                   <PaginationTabs
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}

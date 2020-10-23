@@ -13,7 +13,7 @@ export default function SearchBar({
   const [title, setTitle] = useState("");
   const [valid, setValid] = useState(false);
   const [filter, setFilter] = useState("createdAt");
-  const [limit, setLimit] = useState(3);
+  const [limit, setLimit] = useState(5);
 
   // Submit searching
   const handleSubmit = (e) => {

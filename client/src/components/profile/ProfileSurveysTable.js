@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 // Bootstrap
 import Table from "react-bootstrap/Table";
@@ -14,13 +15,24 @@ import ResultsIcon from "../img/results-icon.svg";
 import VoteIcon from "../img/vote-icon.svg";
 import DeleteIcon from "../img/delete-icon.svg";
 import EditIcon from "../img/edit-icon.svg";
+// Context
+import { UserContext } from "../../context/UserContext";
 // Functions
 import {
   formatExpirationDate,
   formatCreatedAtDate,
 } from "../functions/dateFormatting";
 
-export default function SurveysTableRow({ surveys }) {
+export default function SurveysTableRow({
+  user,
+  surveys,
+  getSurveys,
+  setError,
+}) {
+  // Context
+  const [userState] = useContext(UserContext);
+
+  // Styles
   const badgeStyles = {
     textTransform: "uppercase",
     fontWeight: "500",
@@ -50,6 +62,20 @@ export default function SurveysTableRow({ surveys }) {
         {status}
       </Badge>
     );
+  };
+
+  // Delete survey
+  const handleDelete = (surveyId) => {
+    axios
+      .delete(`/api/surveys/${surveyId}`)
+      .then(() => {
+        // Refresh surveys data
+        getSurveys();
+      })
+      .catch((err) => {
+        // Set error
+        setError(err.response.data.error);
+      });
   };
 
   return (
@@ -105,24 +131,34 @@ export default function SurveysTableRow({ surveys }) {
                     </Button>
                   </Link>
                 </OverlayTrigger>
-                <OverlayTrigger
-                  placement="bottom"
-                  overlay={<Tooltip id="edit-btn-tooltip">Edit</Tooltip>}
-                >
-                  <Link to={`/surveys/${survey._id}/edit`}>
-                    <Button type="button" variant="secondary">
-                      <Image src={EditIcon} height="20" />
-                    </Button>
-                  </Link>
-                </OverlayTrigger>
-                <OverlayTrigger
-                  placement="bottom"
-                  overlay={<Tooltip id="delete-btn-tooltip">Delete</Tooltip>}
-                >
-                  <Button type="button" variant="danger">
-                    <Image src={DeleteIcon} height="20" />
-                  </Button>
-                </OverlayTrigger>
+                {userState.user._id === user._id && (
+                  <>
+                    <OverlayTrigger
+                      placement="bottom"
+                      overlay={<Tooltip id="edit-btn-tooltip">Edit</Tooltip>}
+                    >
+                      <Link to={`/surveys/${survey._id}/edit`}>
+                        <Button type="button" variant="secondary">
+                          <Image src={EditIcon} height="20" />
+                        </Button>
+                      </Link>
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                      placement="bottom"
+                      overlay={
+                        <Tooltip id="delete-btn-tooltip">Delete</Tooltip>
+                      }
+                    >
+                      <Button
+                        type="button"
+                        variant="danger"
+                        onClick={() => handleDelete(survey._id)}
+                      >
+                        <Image src={DeleteIcon} height="20" />
+                      </Button>
+                    </OverlayTrigger>
+                  </>
+                )}
               </ButtonGroup>
             </td>
           </tr>

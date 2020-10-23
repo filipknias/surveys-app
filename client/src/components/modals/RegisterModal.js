@@ -160,7 +160,7 @@ function RegisterModal() {
               />
             </Form.Group>
 
-            <div className="mt-4 mb-3">
+            <div className="d-flex mt-4 mb-3">
               <Button type="submit" variant="primary">
                 {userState.loading ? (
                   <Spinner animation="border" />

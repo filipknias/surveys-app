@@ -88,7 +88,7 @@ router.post("/login", loginValidation, async (req, res) => {
 
 // GET /api/users/:id
 // Get user data
-router.get("/:userId", verifyToken, async (req, res) => {
+router.get("/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     const userData = {
