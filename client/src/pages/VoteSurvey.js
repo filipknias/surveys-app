@@ -40,7 +40,7 @@ export default function VoteSurvey(props) {
         // Set survey
         setSurvey({
           ...res.data,
-          answers: answersState
+          answers: answersState,
         });
         // Stop loading
         setSurveyLoading(false);
@@ -78,9 +78,12 @@ export default function VoteSurvey(props) {
     });
     // Format checked array to only values array
     const answersValues = checkedAnswers.map((answer) => {
-      return answer.value;
+      return {
+        id: answer.id,
+        value: answer.value,
+      };
     });
-    
+
     axios
       .post(`/api/votes/${survey._id}`, { answers: answersValues })
       .then(() => {
@@ -128,13 +131,13 @@ export default function VoteSurvey(props) {
         }
       }
     });
-    
-    setSurvey(survey =>  {
-        return {
+
+    setSurvey((survey) => {
+      return {
         ...survey,
-        answers: updatedAnswers
-      }
-    })
+        answers: updatedAnswers,
+      };
+    });
   };
 
   return (
@@ -144,26 +147,20 @@ export default function VoteSurvey(props) {
       ) : (
         <Card border="dark">
           <Card.Header className="text-center" as="h4">
-              Make a <span className="green-text">Vote</span>
+            Make a <span className="green-text">Vote</span>
           </Card.Header>
           <Card.Body className="px-md-4">
             {surveyLoading ? (
               <Spinner animation="border" className="m-auto d-block" />
             ) : (
               <>
-                {survey.author && (
-                  <SurveyCardHeader survey={survey} />
-                )}
+                {survey.author && <SurveyCardHeader survey={survey} />}
                 <Form className="mt-4" onSubmit={handleSubmit}>
                   {survey.answers &&
                     survey.answers.map((answer) => (
                       <Form.Group key={answer.id}>
                         <Form.Check
-                          type={
-                            survey.multipleAnswers
-                              ? "checkbox"
-                              : "radio"
-                          }
+                          type={survey.multipleAnswers ? "checkbox" : "radio"}
                           label={answer.value}
                           id={answer.id}
                           checked={answer.checked}
@@ -179,7 +176,10 @@ export default function VoteSurvey(props) {
                       disabled={valid ? false : true}
                     >
                       {voteLoading ? (
-                        <Spinner animation="border" className="m-auto d-block" />
+                        <Spinner
+                          animation="border"
+                          className="m-auto d-block"
+                        />
                       ) : (
                         <p>Vote</p>
                       )}

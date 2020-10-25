@@ -75,7 +75,6 @@ export default function ResultsSurvey(props) {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
         // Set error
         setError(err.response.data.error);
         // Stop loading
@@ -102,27 +101,22 @@ export default function ResultsSurvey(props) {
 
   // Format votes
   const formatVotes = (votes) => {
-    // Get all answers in one array
-    const answersValues = survey.answers.map((answer) => {
-      return answer.value;
-    });
-
     // Get all votes in one array
     const votesValues = votes.reduce((total, current) => {
       return total.concat(current);
     }, []);
 
     // Sort all votes by their answer
-    const formattedAnswers = answersValues.map((answerValue) => {
+    const formattedAnswers = survey.answers.map((answerValue) => {
       return votesValues.filter((voteValue) => {
-        return voteValue === answerValue;
+        return voteValue.id === answerValue.id;
       });
     });
 
     // Format sorted votes to object with answer and votesCount as keys
     const formattedVotes = formattedAnswers.map((vote, index) => {
       return {
-        answer: answersValues[index],
+        answer: survey.answers[index],
         votesCount: vote.length,
         progressBarLabel: calcProgress(vote.length, survey.votesCount),
       };
@@ -164,7 +158,7 @@ export default function ResultsSurvey(props) {
                 </h4>
                 {votes.map((vote, index) => (
                   <div className="my-4" key={index}>
-                    <p className="mb-1">{vote.answer}</p>
+                    <p className="mb-1">{vote.answer.value}</p>
                     <ProgressBar
                       now={vote.progressBarLabel}
                       label={`${vote.progressBarLabel}%`}

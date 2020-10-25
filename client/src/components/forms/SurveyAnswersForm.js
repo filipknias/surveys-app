@@ -84,9 +84,9 @@ export default function SurveyAnswersForm() {
         </Alert>
       )}
 
-      {formState.values.answers.map((answer) => (
+      {formState.values.answers.map((answer, index) => (
         <Form.Group key={answer.id}>
-          <Form.Label htmlFor={`answer${answer.id}`}>
+          <Form.Label htmlFor={`answer${index + 1}`}>
             Answer #{answer.id}
           </Form.Label>
           <Form.Control

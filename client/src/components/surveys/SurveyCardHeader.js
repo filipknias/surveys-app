@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 // Bootstrap
 import Card from "react-bootstrap/Card";
@@ -47,10 +48,15 @@ export default function SurveyCardHeader({ survey }) {
 
   return (
     <>
-      {expirationDate && (
+      {expirationDate && survey.status !== "closed" && (
         <Alert variant="info" className="mt-3 mb-4">
           This survey has expiration date set to:
           <b> {expirationDate}</b>. After this time survey will be closed.
+        </Alert>
+      )}
+      {survey.status === "closed" && (
+        <Alert variant="danger" className="mt-3 mb-4">
+          <b>This survey is closed.</b> You cannot vote any more.
         </Alert>
       )}
       <div className="d-flex justify-content-between align-items-start">
@@ -68,10 +74,12 @@ export default function SurveyCardHeader({ survey }) {
           </Card.Subtitle>
         </div>
         {userState.isAuth && survey.author === userState.user._id && (
-          <Button variant="secondary">
-            <Image src={EditIcon} height="14" className="mr-2" />
-            Edit
-          </Button>
+          <Link to={`/surveys/${survey._id}/edit`}>
+            <Button variant="secondary">
+              <Image src={EditIcon} height="14" className="mr-2" />
+              Edit
+            </Button>
+          </Link>
         )}
       </div>
     </>

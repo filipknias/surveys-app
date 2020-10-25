@@ -12,12 +12,13 @@ import Explore from "./pages/Explore";
 import CreateSurvey from "./pages/CreateSurvey";
 import VoteSurvey from "./pages/VoteSurvey";
 import ResultsSurvey from "./pages/ResultsSurvey";
+import EditSurvey from "./pages/EditSurvey";
 import Profile from "./pages/Profile";
 // Context
 import { UserProvider } from "./context/UserContext";
 import { FormProvider } from "./context/FormContext";
 
-function App() {
+export default function App() {
   return (
     <UserProvider>
       <Router>
@@ -34,6 +35,7 @@ function App() {
             <Route path="/users/:userId" component={Profile} />
             <FormProvider>
               <Route path="/create" component={CreateSurvey} />
+              <Route path="/surveys/:surveyId/edit" component={EditSurvey} />
             </FormProvider>
           </Switch>
         </Container>
@@ -41,5 +43,3 @@ function App() {
     </UserProvider>
   );
 }
-
-export default App;

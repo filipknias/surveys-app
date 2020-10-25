@@ -101,7 +101,7 @@ router.get("/get", async (req, res) => {
 
 // GET /api/surveys/get/:id
 // Get survey by id
-router.get("/get/:surveyId", checkExpirationDate, async (req, res) => {
+router.get("/get/:surveyId", async (req, res) => {
   try {
     const survey = await Survey.findById(req.params.surveyId);
     return res.status(200).json(survey);

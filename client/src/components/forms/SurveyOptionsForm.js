@@ -12,12 +12,16 @@ import {
   SET_VALID,
   SET_INVALID,
 } from "../../reducers/types";
+// Functions
+import { convertToExpirationDate } from "../functions/dateFormatting";
 
 export default function SurveyOptionsForm() {
   // Context
   const [formState, dispatch] = useContext(FormContext);
   // State
-  const [expirationDate, setExpirationDate] = useState(false);
+  const [expirationDate, setExpirationDate] = useState(
+    formState.values.expirationDate.date ? true : false
+  );
 
   const hourValidation = () => {
     const {
@@ -217,6 +221,7 @@ export default function SurveyOptionsForm() {
         >
           <option value="public">Public</option>
           <option value="private">Private</option>
+          <option value="closed">Closed</option>
         </Form.Control>
       </Form.Group>
       <Form.Group>

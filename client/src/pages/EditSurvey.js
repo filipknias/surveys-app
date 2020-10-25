@@ -1,16 +1,17 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import axios from "axios";
+// Bootstrap
+import Card from "react-bootstrap/Card";
 // Components
 import CreateSurveyForm from "../components/forms/CreateSurveyForm";
 import Error from "../components/Error";
 import AuthError from "../components/AuthError";
-// Bootstrap
-import Card from "react-bootstrap/Card";
 // Context
 import { UserContext } from "../context/UserContext";
 import { FormContext } from "../context/FormContext";
 // Reducer types
 import {
+  SET_VALUES,
   RESET_VALUES,
   START_LOADING,
   STOP_LOADING,
@@ -18,17 +19,91 @@ import {
   CLEAR_ERRORS,
 } from "../reducers/types";
 
-export default function CreateSurvey({ history }) {
+export default function EditSurvey(props) {
   // Context
   const [userState] = useContext(UserContext);
   const [formState, dispatch] = useContext(FormContext);
 
-  // Reset values
+  const surveyId = props.match.params.surveyId;
+
+  // Fetch survey with given id and set expiration date state
   useEffect(() => {
-    dispatch({ type: RESET_VALUES });
+    // Start loading
+    dispatch({ type: START_LOADING });
+    axios
+      .get(`/api/surveys/get/${surveyId}`)
+      .then((res) => {
+        // Clear errors
+        dispatch({
+          type: CLEAR_ERRORS,
+          payload: { general: null },
+        });
+
+        // Destructuring fetched response
+        const {
+          title,
+          status,
+          expirationDate,
+          multipleAnswers,
+          answers,
+        } = res.data;
+
+        // Survey data
+        const surveyData = {
+          title,
+          status,
+          multipleAnswers,
+          answers: [...answers],
+        };
+
+        // Description
+        if (res.data.description) {
+          surveyData.description = res.data.description;
+        }
+
+        // Expiration Date
+        if (expirationDate) {
+          const date = new Date(expirationDate);
+
+          const formattedDate = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            date.getHours(),
+            date.getMinutes()
+          );
+
+          const expirationDateObj = {
+            formattedDate,
+            date: formattedDate.toISOString().split("T")[0],
+            hour: formattedDate.getHours(),
+            minute: formattedDate.getMinutes(),
+          };
+
+          surveyData.expirationDate = expirationDateObj;
+        }
+
+        // Set survey values in formState
+        dispatch({
+          type: SET_VALUES,
+          payload: surveyData,
+        });
+
+        // Stop loading
+        dispatch({ type: STOP_LOADING });
+      })
+      .catch((err) => {
+        // Set error
+        dispatch({
+          type: SET_ERRORS,
+          payload: { general: err.response.data.error },
+        });
+        // Stop loading
+        dispatch({ type: STOP_LOADING });
+      });
   }, []);
 
-  // Submit survey
+  // Submit edited survey
   const handleSubmit = (e) => {
     e.preventDefault();
     // Prevent submit on prev steps
@@ -42,7 +117,7 @@ export default function CreateSurvey({ history }) {
     const filledAnswers = values.answers.filter((answer) => {
       return answer.value.trim().length > 0;
     });
-    const formattedAnswers = filledAnswers.map((answer, index) => {
+    const formattedAnswers = filledAnswers.map((answer) => {
       return {
         ...answer,
         value: answer.value.trim(),
@@ -65,7 +140,7 @@ export default function CreateSurvey({ history }) {
 
     // Send survey
     axios
-      .post("/api/surveys/create", newSurveyData)
+      .put(`/api/surveys/${surveyId}`, newSurveyData)
       .then((res) => {
         // Reset values
         dispatch({ type: RESET_VALUES });
@@ -75,7 +150,7 @@ export default function CreateSurvey({ history }) {
           payload: { general: null },
         });
         // Redirect to survey vote page
-        history.push(`/surveys/${res.data._id}/vote`);
+        props.history.push(`/surveys/${res.data._id}/vote`);
         // Stop loading
         dispatch({ type: STOP_LOADING });
       })
@@ -100,11 +175,13 @@ export default function CreateSurvey({ history }) {
           ) : (
             <Card border="dark">
               <Card.Header className="text-center" as="h4">
-                Create your own{" "}
-                <span className="green-text">custom survey</span>
+                Edit <span className="green-text">your survey</span>
               </Card.Header>
               <Card.Body className="px-md-5">
-                <CreateSurveyForm handleSubmit={handleSubmit} />
+                <CreateSurveyForm
+                  history={props.history}
+                  handleSubmit={handleSubmit}
+                />
               </Card.Body>
             </Card>
           )}
