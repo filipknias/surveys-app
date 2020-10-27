@@ -31,6 +31,7 @@ export default function ProfileSurveys({ user, history }) {
     currentPageValue,
     limitValue
   ) => {
+    if (user === null) return;
     // Start loading
     setLoading(true);
     axios
@@ -57,11 +58,13 @@ export default function ProfileSurveys({ user, history }) {
 
   // Fetch all surveys
   useEffect(() => {
+    if (user === null) return;
     getSurveys();
   }, [user]);
 
   // Get all the surveys created by given user
   const getSurveys = () => {
+    if (user === null) return;
     // Reset current page
     setCurrentPage(1);
     // Start loading

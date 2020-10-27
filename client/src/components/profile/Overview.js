@@ -14,6 +14,7 @@ export default function Overview({ user, surveys }) {
 
   // Count surveys based on their status
   useEffect(() => {
+    if (user === null) return;
     // Set active surveys count
     const activeSurveys = surveys.filter((survey) => {
       return survey.status === "public" || survey.status === "private";
