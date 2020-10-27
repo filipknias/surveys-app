@@ -14,12 +14,15 @@ import Error from "../Error";
 import ProfileSurveysTable from "../profile/ProfileSurveysTable";
 import PaginationTabs from "../PaginationTabs";
 
-export default function ProfileSurveys({ user }) {
+export default function ProfileSurveys({ user, history }) {
   // State
   const [response, setResponse] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const DEFAULT_FILTER = "createdAt";
+  const DEFAULT_LIMIT = "5";
 
   // Request to search surveys
   const searchRequest = (
@@ -32,9 +35,9 @@ export default function ProfileSurveys({ user }) {
     setLoading(true);
     axios
       .get(
-        `/api/surveys/users/${
+        `/api/surveys/get?sort=${sortValue}&title=${titleValue.trim()}&page=${currentPageValue}&limit=${limitValue}&author=${
           user._id
-        }?sort=${sortValue}&title=${titleValue.trim()}&page=${currentPageValue}&limit=${limitValue}`
+        }`
       )
       .then((res) => {
         // Clear error
@@ -44,9 +47,9 @@ export default function ProfileSurveys({ user }) {
         // Stop loading
         setLoading(false);
       })
-      .catch((err) => {
-        // Set error
-        setError(err.response.data.error);
+      .catch(() => {
+        // Redirect to home page
+        history.push("/");
         // Stop loading
         setLoading(false);
       });
@@ -65,7 +68,7 @@ export default function ProfileSurveys({ user }) {
     setLoading(true);
     axios
       .get(
-        `/api/surveys/users/${user._id}?sort=createdAt&page=${currentPage}&limit=5`
+        `/api/surveys/get?sort=${DEFAULT_FILTER}&page=${currentPage}&limit=${DEFAULT_LIMIT}&author=${user._id}`
       )
       .then((res) => {
         // Clear error
@@ -75,9 +78,9 @@ export default function ProfileSurveys({ user }) {
         // Stop loading
         setLoading(false);
       })
-      .catch((err) => {
-        // Set error
-        setError(err.response.data.error);
+      .catch(() => {
+        // Redirect to home page
+        history.push("/");
         // Stop loading
         setLoading(false);
       });
@@ -109,7 +112,7 @@ export default function ProfileSurveys({ user }) {
           </Accordion>
 
           {loading ? (
-            <Spinner animation="border" className="mx-auto d-block" />
+            <Spinner animation="border" className="mx-auto mt-4 d-block" />
           ) : (
             <>
               {response.results && response.results.length > 0 ? (
@@ -120,12 +123,16 @@ export default function ProfileSurveys({ user }) {
                     getSurveys={getSurveys}
                     setError={setError}
                   />
-                  <PaginationTabs
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
-                    previousPage={response.previous ? response.previous : null}
-                    nextPage={response.next ? response.next : null}
-                  />
+                  <div className="mt-md-0 mt-3">
+                    <PaginationTabs
+                      currentPage={currentPage}
+                      setCurrentPage={setCurrentPage}
+                      previousPage={
+                        response.previous ? response.previous : null
+                      }
+                      nextPage={response.next ? response.next : null}
+                    />
+                  </div>
                 </>
               ) : (
                 <div className="my-4">

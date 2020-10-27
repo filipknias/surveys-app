@@ -30,7 +30,7 @@ export default function Explore() {
     setLoading(true);
     axios
       .get(
-        `/api/surveys/get?sort=${sortValue}&title=${titleValue.trim()}&page=${currentPageValue}&limit=${limitValue}`
+        `/api/surveys/get?sort=${sortValue}&title=${titleValue.trim()}&page=${currentPageValue}&limit=${limitValue}&status=public`
       )
       .then((res) => {
         // Clear error

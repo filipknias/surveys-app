@@ -12,9 +12,7 @@ export default function (state, action) {
     case SET_USER:
       return {
         ...state,
-        user: {
-          ...action.payload,
-        },
+        user: { ...action.payload },
         isAuth: true,
       };
     case CLEAR_USER:
@@ -29,12 +27,14 @@ export default function (state, action) {
         errors: {
           ...action.payload,
         },
-        isAuth: false,
       };
     case CLEAR_ERRORS:
       return {
         ...state,
-        errors: {},
+        errors: {
+          ...state.errors,
+          ...action.payload,
+        },
       };
     case START_LOADING:
       return {

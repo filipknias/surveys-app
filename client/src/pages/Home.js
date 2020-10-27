@@ -20,7 +20,7 @@ function Home() {
     setLoading(true);
     // Get latest surveys
     axios
-      .get("api/surveys/get?sort=createdAt&limit=5")
+      .get("api/surveys/get?sort=createdAt&limit=5&status=public")
       .then((res) => {
         setLatestSurveys(res.data.results);
         setLoading(false);
@@ -31,7 +31,7 @@ function Home() {
 
     // Get popular surveys
     axios
-      .get("api/surveys/get?sort=votesCount&limit=5")
+      .get("api/surveys/get?sort=votesCount&limit=5&status=public")
       .then((res) => {
         setPopularSurveys(res.data.results);
         setLoading(false);

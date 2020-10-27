@@ -11,6 +11,7 @@ import Image from "react-bootstrap/Image";
 // Components
 import LoginModal from "./modals/LoginModal";
 import RegisterModal from "./modals/RegisterModal";
+import EditProfileModal from "./modals/EditProfileModal";
 // Images
 import ProfileIcon from "./img/profile-icon.svg";
 import AccountDropdownIcon from "./img/account-dropdown-icon.svg";
@@ -20,7 +21,7 @@ import { UserContext } from "../context/UserContext";
 // Reducer Types
 import { SET_USER, CLEAR_USER } from "../reducers/types";
 
-function NavbarComponent() {
+export default function NavbarComponent() {
   const [open, setOpen] = useState(false);
   const [userState, dispatch] = useContext(UserContext);
 
@@ -94,14 +95,24 @@ function NavbarComponent() {
                   {userState.user.email}
                 </p>
                 <NavDropdown.Divider />
-                <Link to={`/users/${userState.user._id}`} onClick={() => setOpen(false)}>
+                <NavDropdown.Item
+                  onClick={() => setOpen(false)}
+                  as="div"
+                  style={{ cursor: "pointer" }}
+                >
+                  <EditProfileModal />
+                </NavDropdown.Item>
+                <Link
+                  to={`/users/${userState.user._id}`}
+                  onClick={() => setOpen(false)}
+                >
                   <NavDropdown.Item as="div">
-                      <Image
-                        src={AccountDropdownIcon}
-                        height="20"
-                        className="mr-2"
-                      />
-                      Account
+                    <Image
+                      src={AccountDropdownIcon}
+                      height="20"
+                      className="mr-2"
+                    />
+                    Account
                   </NavDropdown.Item>
                 </Link>
                 <NavDropdown.Item onClick={handleLogout}>
@@ -129,5 +140,3 @@ function NavbarComponent() {
     </Navbar>
   );
 }
-
-export default NavbarComponent;

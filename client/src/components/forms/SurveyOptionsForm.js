@@ -12,8 +12,6 @@ import {
   SET_VALID,
   SET_INVALID,
 } from "../../reducers/types";
-// Functions
-import { convertToExpirationDate } from "../functions/dateFormatting";
 
 export default function SurveyOptionsForm() {
   // Context

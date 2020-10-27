@@ -23,7 +23,7 @@ import {
   formatCreatedAtDate,
 } from "../functions/dateFormatting";
 
-export default function SurveysTableRow({
+export default function ProfileSurveysTable({
   user,
   surveys,
   getSurveys,
@@ -69,6 +69,8 @@ export default function SurveysTableRow({
     axios
       .delete(`/api/surveys/${surveyId}`)
       .then(() => {
+        // Clear error
+        setError(null);
         // Refresh surveys data
         getSurveys();
       })
@@ -93,11 +95,7 @@ export default function SurveysTableRow({
         {surveys.map((survey) => (
           <tr key={survey._id}>
             <td className="d-flex">
-              <Image
-                src={PieChart}
-                height="40"
-                className="mr-3 d-none d-lg-block"
-              />
+              <Image src={PieChart} height="40" className="mr-3" />
               <h5>{survey.title}</h5>
             </td>
             <td>{formatCreatedAtDate(survey.createdAt)}</td>

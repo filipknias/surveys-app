@@ -19,7 +19,8 @@ import {
   START_LOADING,
   STOP_LOADING,
 } from "../../reducers/types";
-function LoginModal() {
+
+export default function LoginModal() {
   // Refs
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -83,11 +84,11 @@ function LoginModal() {
             height="200"
             className="mx-auto my-3 d-block"
           />
-          <Modal.Title className="w-100 text-center">
-            <h2>Log In to your account</h2>
+          <Modal.Title className="w-100 text-center" as="h2">
+            Log In to your account
           </Modal.Title>
         </Modal.Header>
-        {userState.errors && userState.errors.general && (
+        {userState.errors.general && (
           <Alert variant="danger">{userState.errors.general}</Alert>
         )}
         <Modal.Body>
@@ -95,14 +96,14 @@ function LoginModal() {
             <Form.Group>
               <Form.Label htmlFor="email">Email address</Form.Label>
               <Form.Control
-                isInvalid={userState.errors && userState.errors.email}
+                isInvalid={userState.errors.email}
                 type="email"
                 id="email"
                 placeholder="Your email..."
                 ref={emailRef}
                 required
               />
-              {userState.errors && userState.errors.email && (
+              {userState.errors.email && (
                 <Form.Control.Feedback type="invalid">
                   {userState.errors.email}
                 </Form.Control.Feedback>
@@ -111,14 +112,14 @@ function LoginModal() {
             <Form.Group>
               <Form.Label htmlFor="password">Password</Form.Label>
               <Form.Control
-                isInvalid={userState.errors && userState.errors.password}
+                isInvalid={userState.errors.password}
                 type="password"
                 id="password"
                 placeholder="Your password..."
                 ref={passwordRef}
                 required
               />
-              {userState.errors && userState.errors.password && (
+              {userState.errors.password && (
                 <Form.Control.Feedback type="invalid">
                   {userState.errors.password}
                 </Form.Control.Feedback>
@@ -147,5 +148,3 @@ function LoginModal() {
     </>
   );
 }
-
-export default LoginModal;

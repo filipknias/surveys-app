@@ -50,7 +50,7 @@ router.post("/create", verifyToken, async (req, res) => {
 // GET /api/surveys/get
 // Get all surveys by given queries
 router.get("/get", async (req, res) => {
-  let query = Survey.find({ status: "public" });
+  let query = Survey.find();
 
   const response = {};
 
@@ -60,6 +60,16 @@ router.get("/get", async (req, res) => {
   // Searching surveys by title
   if (req.query.title && req.query.title !== "") {
     query = query.regex("title", new RegExp(req.query.title, "i"));
+  }
+
+  // Searching surveys by author
+  if (req.query.author) {
+    query = query.find({ author: req.query.author });
+  }
+
+  // Searching surveys by status
+  if (req.query.status) {
+    query = query.find({ status: req.query.status.toString() });
   }
 
   // Sorting surveys
@@ -105,58 +115,6 @@ router.get("/get/:surveyId", async (req, res) => {
   try {
     const survey = await Survey.findById(req.params.surveyId);
     return res.status(200).json(survey);
-  } catch (err) {
-    console.error(err);
-    return res
-      .status(500)
-      .json({ error: "Could not load the resources. Please try again." });
-  }
-});
-
-// GET /api/surveys/:userId
-// Get all surveys created by given user
-router.get("/users/:userId", async (req, res) => {
-  let query = Survey.find({ author: req.params.userId });
-
-  const response = {};
-
-  const limit = parseInt(req.query.limit);
-  const page = parseInt(req.query.page);
-
-  // Searching surveys by title
-  if (req.query.title && req.query.title !== "") {
-    query = query.regex("title", new RegExp(req.query.title, "i"));
-  }
-
-  // Sorting surveys
-  if (req.query.sort) {
-    query = query.sort({ [req.query.sort]: -1 });
-  }
-
-  // Pagination
-  if (req.query.page && req.query.limit) {
-    const queriedSurveysCount = await Survey.countDocuments(query).exec();
-    const paginatedResults = paginateResults(queriedSurveysCount, page, limit);
-    query = query.skip(paginatedResults.startIndex);
-
-    if (paginatedResults.previous) {
-      response.previous = paginatedResults.previous;
-    }
-
-    if (paginatedResults.next) {
-      response.next = paginatedResults.next;
-    }
-  }
-
-  // Limit results
-  if (req.query.limit) {
-    query = query.limit(limit);
-  }
-  try {
-    response.results = await query.exec();
-    // Check expiration date
-    await checkExpirationDateCollection(response.results);
-    return res.status(200).json(response);
   } catch (err) {
     console.error(err);
     return res

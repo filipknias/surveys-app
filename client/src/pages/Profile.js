@@ -39,7 +39,7 @@ export default function Profile(props) {
       });
 
     axios
-      .get(`/api/surveys/users/${userId}?page=1&limit=5`)
+      .get(`/api/surveys/get?author=${userId}`)
       .then((res) => {
         // Set response
         setResponse(res.data);
@@ -78,7 +78,7 @@ export default function Profile(props) {
                       <Overview user={user} surveys={response.results} />
                     </Tab>
                     <Tab eventKey="surveys" title="Surveys">
-                      <ProfileSurveys user={user} />
+                      <ProfileSurveys user={user} history={props.history} />
                     </Tab>
                   </Tabs>
                 )}
