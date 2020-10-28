@@ -2,10 +2,12 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
+// Imports
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const cors = require("cors");
+const path = require("path");
 
 // Server config
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -32,5 +34,13 @@ const votesRouter = require("./routes/votes");
 app.use("/api/users", usersRouter);
 app.use("/api/surveys", surveysRouter);
 app.use("/api/votes", votesRouter);
+
+// Set static folder in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
 app.listen(process.env.PORT || 5000);
