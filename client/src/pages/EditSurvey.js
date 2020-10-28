@@ -28,10 +28,13 @@ export default function EditSurvey(props) {
 
   // Fetch survey with given id and set expiration date state
   useEffect(() => {
+    const cancelTokenSource = axios.CancelToken.source();
     // Start loading
     dispatch({ type: START_LOADING });
     axios
-      .get(`/api/surveys/get/${surveyId}`)
+      .get(`/api/surveys/get/${surveyId}`, {
+        cancelToken: cancelTokenSource.token,
+      })
       .then((res) => {
         // Clear errors
         dispatch({
@@ -93,6 +96,7 @@ export default function EditSurvey(props) {
         dispatch({ type: STOP_LOADING });
       })
       .catch((err) => {
+        if (axios.isCancel(err)) return;
         // Set error
         dispatch({
           type: SET_ERRORS,
@@ -101,6 +105,10 @@ export default function EditSurvey(props) {
         // Stop loading
         dispatch({ type: STOP_LOADING });
       });
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, []);
 
   // Submit edited survey

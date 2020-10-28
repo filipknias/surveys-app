@@ -17,28 +17,41 @@ function Home() {
 
   // Get surveys
   useEffect(() => {
+    const cancelTokenSource = axios.CancelToken.source();
     setLoading(true);
     // Get latest surveys
     axios
-      .get("api/surveys/get?sort=createdAt&limit=5&status=public")
+      .get("api/surveys/get?sort=createdAt&limit=5&status=public", {
+        cancelToken: cancelTokenSource.token,
+      })
       .then((res) => {
         setLatestSurveys(res.data.results);
         setLoading(false);
       })
       .catch((err) => {
+        if (axios.isCancel(err)) return;
         setError(err.response.data.error);
+        setLoading(false);
       });
 
     // Get popular surveys
     axios
-      .get("api/surveys/get?sort=votesCount&limit=5&status=public")
+      .get("api/surveys/get?sort=votesCount&limit=5&status=public", {
+        cancelToken: cancelTokenSource.token,
+      })
       .then((res) => {
         setPopularSurveys(res.data.results);
         setLoading(false);
       })
       .catch((err) => {
+        if (axios.isCancel(err)) return;
         setError(err.response.data.error);
+        setLoading(false);
       });
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, []);
 
   return (

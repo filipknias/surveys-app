@@ -29,16 +29,18 @@ export default function ProfileSurveys({ user, history }) {
     titleValue,
     sortValue,
     currentPageValue,
-    limitValue
+    limitValue,
+    cancelTokenSource
   ) => {
-    if (user === null) return;
     // Start loading
     setLoading(true);
+
     axios
       .get(
         `/api/surveys/get?sort=${sortValue}&title=${titleValue.trim()}&page=${currentPageValue}&limit=${limitValue}&author=${
           user._id
-        }`
+        }`,
+        { cancelToken: cancelTokenSource.token }
       )
       .then((res) => {
         // Clear error
@@ -48,7 +50,8 @@ export default function ProfileSurveys({ user, history }) {
         // Stop loading
         setLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (axios.isCancel(err)) return;
         // Redirect to home page
         history.push("/");
         // Stop loading
@@ -58,20 +61,25 @@ export default function ProfileSurveys({ user, history }) {
 
   // Fetch all surveys
   useEffect(() => {
-    if (user === null) return;
-    getSurveys();
+    const cancelTokenSource = axios.CancelToken.source();
+    getSurveys(cancelTokenSource);
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, [user]);
 
   // Get all the surveys created by given user
-  const getSurveys = () => {
-    if (user === null) return;
+  const getSurveys = (cancelTokenSource) => {
     // Reset current page
     setCurrentPage(1);
     // Start loading
     setLoading(true);
+
     axios
       .get(
-        `/api/surveys/get?sort=${DEFAULT_FILTER}&page=${currentPage}&limit=${DEFAULT_LIMIT}&author=${user._id}`
+        `/api/surveys/get?sort=${DEFAULT_FILTER}&page=${currentPage}&limit=${DEFAULT_LIMIT}&author=${user._id}`,
+        { cancelToken: cancelTokenSource.token }
       )
       .then((res) => {
         // Clear error
@@ -81,7 +89,8 @@ export default function ProfileSurveys({ user, history }) {
         // Stop loading
         setLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (axios.isCancel(err)) return;
         // Redirect to home page
         history.push("/");
         // Stop loading

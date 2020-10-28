@@ -12,7 +12,7 @@ import Error from "../components/Error";
 
 export default function Profile(props) {
   // State
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
   const [response, setResponse] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -21,10 +21,11 @@ export default function Profile(props) {
 
   // Fetch all data
   useEffect(() => {
+    const cancelTokenSource = axios.CancelToken.source();
     // Start loading
     setLoading(true);
     axios
-      .get(`/api/users/${userId}`)
+      .get(`/api/users/${userId}`, { cancelToken: cancelTokenSource.token })
       .then((res) => {
         // Set user
         setUser(res.data);
@@ -32,6 +33,7 @@ export default function Profile(props) {
         setLoading(false);
       })
       .catch((err) => {
+        if (axios.isCancel(err)) return;
         // Set error
         setError(err.response.data.error);
         // Stop loading
@@ -39,7 +41,9 @@ export default function Profile(props) {
       });
 
     axios
-      .get(`/api/surveys/get?author=${userId}`)
+      .get(`/api/surveys/get?author=${userId}`, {
+        cancelToken: cancelTokenSource.token,
+      })
       .then((res) => {
         // Set response
         setResponse(res.data);
@@ -47,11 +51,16 @@ export default function Profile(props) {
         setLoading(false);
       })
       .catch((err) => {
+        if (axios.isCancel(err)) return;
         // Set error
         setError(err.response.data.error);
         // Stop loading
         setLoading(false);
       });
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, []);
 
   return (
@@ -68,7 +77,7 @@ export default function Profile(props) {
               <Spinner animation="border" className="mx-auto d-block" />
             ) : (
               <>
-                {response.results && (
+                {response.results && user && (
                   <Tabs
                     defaultActiveKey="overview"
                     id="profile-tabs"

@@ -28,13 +28,17 @@ export default function SurveyCardHeader({ survey }) {
 
   // Set survey author
   useEffect(() => {
+    const cancelTokenSource = axios.CancelToken.source();
     axios
-      .get(`/api/users/${survey.author}`)
+      .get(`/api/users/${survey.author}`, {
+        cancelToken: cancelTokenSource.token,
+      })
       .then((res) => {
         // Set survey author
         setAuthor(res.data);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (axios.isCancel(err)) return;
         // If there is any error set survye author to empty string
         setAuthor("");
       });
@@ -44,6 +48,10 @@ export default function SurveyCardHeader({ survey }) {
     if (survey.expirationDate) {
       setExpirationDate(formatExpirationDate(survey.expirationDate));
     }
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, []);
 
   return (

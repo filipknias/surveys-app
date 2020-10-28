@@ -26,9 +26,14 @@ export default function VoteSurvey(props) {
   useEffect(() => {
     // Start loading
     setSurveyLoading(true);
+
+    const cancelTokenSource = axios.CancelToken.source();
     const surveyId = props.match.params.surveyId;
+
     axios
-      .get(`/api/surveys/get/${surveyId}`)
+      .get(`/api/surveys/get/${surveyId}`, {
+        cancelToken: cancelTokenSource.token,
+      })
       .then((res) => {
         // Set answers
         const answersState = res.data.answers.map((answer) => {
@@ -46,11 +51,16 @@ export default function VoteSurvey(props) {
         setSurveyLoading(false);
       })
       .catch((err) => {
+        if (axios.isCancel(err)) return;
         // Set error
         setError(err.response.data.error);
         // Stop loading
         setSurveyLoading(false);
       });
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, []);
 
   // Answers validation

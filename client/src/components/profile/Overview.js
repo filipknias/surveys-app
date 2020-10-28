@@ -14,7 +14,6 @@ export default function Overview({ user, surveys }) {
 
   // Count surveys based on their status
   useEffect(() => {
-    if (user === null) return;
     // Set active surveys count
     const activeSurveys = surveys.filter((survey) => {
       return survey.status === "public" || survey.status === "private";
@@ -30,10 +29,11 @@ export default function Overview({ user, surveys }) {
 
   return (
     <>
-      <section>
-        <h3 className="mb-4 text-center text-md-left">Profile</h3>
-        <div
-          className="
+      {user && (
+        <section>
+          <h3 className="mb-4 text-center text-md-left">Profile</h3>
+          <div
+            className="
                     d-flex 
                     flex-column 
                     flex-md-row 
@@ -41,20 +41,21 @@ export default function Overview({ user, surveys }) {
                     align-items-md-start 
                     text-center 
                     text-md-left"
-        >
-          <Image src={ProfileAvatar} height="140" />
-          <div className="mt-4 mt-md-0 ml-md-4">
-            <div className="mb-3">
-              <span className="profile-label">Display name</span>
-              <h3>{user.displayName}</h3>
-            </div>
-            <div>
-              <span className="profile-label">E-mail</span>
-              <h3>{user.email}</h3>
+          >
+            <Image src={ProfileAvatar} height="140" />
+            <div className="mt-4 mt-md-0 ml-md-4">
+              <div className="mb-3">
+                <span className="profile-label">Display name</span>
+                <h3>{user.displayName}</h3>
+              </div>
+              <div>
+                <span className="profile-label">E-mail</span>
+                <h3>{user.email}</h3>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="mt-5 mb-3">
         <h3 className="mb-4 text-center text-md-left">Surveys Statistics</h3>

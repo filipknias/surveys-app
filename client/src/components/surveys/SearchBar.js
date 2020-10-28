@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 // Bootstrap
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -29,13 +30,23 @@ export default function SearchBar({
     // Reset current page state
     setCurrentPage(1);
     // Make a search request
-    searchRequest(query, filter, currentPage, limit);
+    const cancelTokenSource = axios.CancelToken.source();
+    searchRequest(query, filter, currentPage, limit, cancelTokenSource);
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, [query]);
 
   // Make search request every time current page, filter or limit changes
   useEffect(() => {
     // Make a search request
-    searchRequest(query, filter, currentPage, limit);
+    const cancelTokenSource = axios.CancelToken.source();
+    searchRequest(query, filter, currentPage, limit, cancelTokenSource);
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, [currentPage, filter, limit]);
 
   // Reset current page every time filter or limit changes

@@ -72,7 +72,8 @@ export default function ProfileSurveysTable({
         // Clear error
         setError(null);
         // Refresh surveys data
-        getSurveys();
+        const cancelTokenSource = axios.CancelToken.source();
+        getSurveys(cancelTokenSource);
       })
       .catch((err) => {
         // Set error

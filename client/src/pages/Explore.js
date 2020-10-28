@@ -24,13 +24,15 @@ export default function Explore() {
     titleValue,
     sortValue,
     currentPageValue,
-    limitValue
+    limitValue,
+    cancelTokenSource
   ) => {
     // Start loading
     setLoading(true);
     axios
       .get(
-        `/api/surveys/get?sort=${sortValue}&title=${titleValue.trim()}&page=${currentPageValue}&limit=${limitValue}&status=public`
+        `/api/surveys/get?sort=${sortValue}&title=${titleValue.trim()}&page=${currentPageValue}&limit=${limitValue}&status=public`,
+        { cancelToken: cancelTokenSource.token }
       )
       .then((res) => {
         // Clear error
@@ -41,6 +43,7 @@ export default function Explore() {
         setLoading(false);
       })
       .catch((err) => {
+        if (axios.isCancel(err)) return;
         // Set error
         setError(err.response.data.error);
         // Stop loading

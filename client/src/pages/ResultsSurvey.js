@@ -36,30 +36,45 @@ export default function ResultsSurvey(props) {
   useEffect(() => {
     // Start loading
     setLoading(true);
+
+    const cancelTokenSource = axios.CancelToken.source();
     const surveyId = props.match.params.surveyId;
+
     axios
-      .get(`/api/surveys/get/${surveyId}`)
+      .get(`/api/surveys/get/${surveyId}`, {
+        cancelToken: cancelTokenSource.token,
+      })
       .then((res) => {
         // Clear error
         setError(null);
         // Set survey
         setSurvey(res.data);
+        // Stop loading
+        setLoading(false);
       })
       .catch((err) => {
+        if (axios.isCancel(err)) return;
         // Set error
         setError(err.response.data.error);
         // Stop loading
         setLoading(false);
       });
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, []);
 
   // Set votes
   useEffect(() => {
+    // Start loading
+    setLoading(true);
     // Check if survey is fetched
     if (Object.keys(survey).length === 0) return;
 
+    const cancelTokenSource = axios.CancelToken.source();
     axios
-      .get(`/api/votes/${survey._id}`)
+      .get(`/api/votes/${survey._id}`, { cancelToken: cancelTokenSource.token })
       .then((res) => {
         // Clear error
         setError(null);
@@ -75,11 +90,16 @@ export default function ResultsSurvey(props) {
         setLoading(false);
       })
       .catch((err) => {
+        if (axios.isCancel(err)) return;
         // Set error
         setError(err.response.data.error);
         // Stop loading
         setLoading(false);
       });
+
+    return () => {
+      cancelTokenSource.cancel();
+    };
   }, [survey]);
 
   // Set progress bar colors
