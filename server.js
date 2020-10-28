@@ -43,4 +43,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+const distDir = __dirname + "/dist/";
+app.use(express.static(distDir));
+
 app.listen(process.env.PORT || 5000);
