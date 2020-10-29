@@ -67,10 +67,11 @@ export default function ResultsSurvey(props) {
 
   // Set votes
   useEffect(() => {
-    // Start loading
-    setLoading(true);
     // Check if survey is fetched
     if (Object.keys(survey).length === 0) return;
+
+    // Start loading
+    setLoading(true);
 
     const cancelTokenSource = axios.CancelToken.source();
     axios
