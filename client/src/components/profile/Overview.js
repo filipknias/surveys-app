@@ -42,7 +42,7 @@ export default function Overview({ user, surveys }) {
                     text-center 
                     text-md-left"
           >
-            <Image src={ProfileAvatar} height="140" />
+            <Image src={ProfileAvatar} height="100" />
             <div className="mt-4 mt-md-0 ml-md-4">
               <div className="mb-3">
                 <span className="profile-label">Display name</span>
@@ -50,7 +50,7 @@ export default function Overview({ user, surveys }) {
               </div>
               <div>
                 <span className="profile-label">E-mail</span>
-                <h3>{user.email}</h3>
+                <h4>{user.email}</h4>
               </div>
             </div>
           </div>
@@ -70,8 +70,8 @@ export default function Overview({ user, surveys }) {
                     text-md-left 
                     mt-4"
         >
-          <Image src={SurveysStatsImage} height="140" />
-          <div className="mx-4 mt-4 mt-md-0">
+          <Image src={SurveysStatsImage} height="100" />
+          <div className="mx-4 mt-5 mt-md-0">
             <p className="profile-label text-center">Created surveys</p>
             <div className="d-flex mt-2">
               <div className="mr-4">
