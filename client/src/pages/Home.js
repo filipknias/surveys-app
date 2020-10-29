@@ -5,9 +5,12 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
+import Image from "react-bootstrap/Image";
 // Components
 import SurveysList from "../components/surveys/SurveysList";
 import Error from "../components/Error";
+// Images
+import NotFoundImage from "../components/img/not-found-image.svg";
 
 function Home() {
   const [popularSurveys, setPopularSurveys] = useState([]);
@@ -54,6 +57,18 @@ function Home() {
     };
   }, []);
 
+  // No surveys found image
+  const noSurveysFound = (
+    <div className="my-5">
+      <Image
+        src={NotFoundImage}
+        height="100"
+        className="d-block mx-auto mt-4"
+      />
+      <h4 className="text-center">No surveys found.</h4>
+    </div>
+  );
+
   return (
     <>
       {error ? (
@@ -70,7 +85,13 @@ function Home() {
                 {loading ? (
                   <Spinner animation="border" className="m-auto d-block" />
                 ) : (
-                  <SurveysList surveys={latestSurveys} />
+                  <>
+                    {latestSurveys.length > 0 ? (
+                      <SurveysList surveys={latestSurveys} />
+                    ) : (
+                      <>{noSurveysFound}</>
+                    )}
+                  </>
                 )}
               </Col>
               <Col md={6}>
@@ -78,7 +99,13 @@ function Home() {
                 {loading ? (
                   <Spinner animation="border" className="m-auto d-block" />
                 ) : (
-                  <SurveysList surveys={popularSurveys} />
+                  <>
+                    {popularSurveys.length > 0 ? (
+                      <SurveysList surveys={popularSurveys} />
+                    ) : (
+                      <>{noSurveysFound}</>
+                    )}
+                  </>
                 )}
               </Col>
             </Row>
