@@ -126,7 +126,11 @@ export default function LoginModal() {
               )}
             </Form.Group>
             <div className="d-flex mt-4 mb-3">
-              <Button type="submit" variant="primary">
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={userState.loading ? true : false}
+              >
                 {userState.loading ? (
                   <Spinner animation="border" />
                 ) : (

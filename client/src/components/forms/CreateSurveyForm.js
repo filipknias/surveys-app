@@ -50,7 +50,9 @@ export default function CreateSurveyForm({ handleSubmit }) {
                 type="submit"
                 className="mt-3"
                 block
-                disabled={formState.isValid ? false : true}
+                disabled={
+                  formState.isValid && !formState.loading ? false : true
+                }
               >
                 {formState.loading ? (
                   <Spinner animation="border" className="m-auto d-block" />

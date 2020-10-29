@@ -81,7 +81,7 @@ export default function SearchBar({
           <Button
             type="submit"
             variant="primary"
-            className="ml-2 px-md-5 mt-2 mt-md-0"
+            className="ml-0 ml-md-2 px-md-5 mt-2 mt-md-0"
             disabled={valid ? false : true}
           >
             Search
@@ -89,7 +89,7 @@ export default function SearchBar({
           <Button
             variant="info"
             type="button"
-            className="ml-2 px-md-5 mt-2 mt-md-0"
+            className="ml-0 ml-md-2 px-md-5 mt-2 mt-md-0"
             onClick={handleRefresh}
             disabled={query === "" ? true : false}
           >
