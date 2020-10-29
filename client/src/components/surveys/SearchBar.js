@@ -71,7 +71,7 @@ export default function SearchBar({
     <Form onSubmit={handleSubmit}>
       <Form.Group controlId="search-form">
         <Form.Label>Search by title</Form.Label>
-        <div className="d-flex">
+        <div className="d-flex flex-column flex-md-row">
           <Form.Control
             type="text"
             placeholder="Survey title..."
@@ -81,7 +81,7 @@ export default function SearchBar({
           <Button
             type="submit"
             variant="primary"
-            className="ml-2 px-md-5"
+            className="ml-2 px-md-5 mt-2 mt-md-0"
             disabled={valid ? false : true}
           >
             Search
@@ -89,7 +89,7 @@ export default function SearchBar({
           <Button
             variant="info"
             type="button"
-            className="ml-2 px-md-5"
+            className="ml-2 px-md-5 mt-2 mt-md-0"
             onClick={handleRefresh}
             disabled={query === "" ? true : false}
           >

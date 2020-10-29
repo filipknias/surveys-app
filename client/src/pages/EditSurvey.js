@@ -182,7 +182,7 @@ export default function EditSurvey(props) {
             <AuthError />
           ) : (
             <Card border="dark">
-              <Card.Header className="text-center" as="h4">
+              <Card.Header className="text-center" as="h5">
                 Edit <span className="green-text">your survey</span>
               </Card.Header>
               <Card.Body className="px-md-5">

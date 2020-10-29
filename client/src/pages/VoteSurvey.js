@@ -156,7 +156,7 @@ export default function VoteSurvey(props) {
         <Error message={error} />
       ) : (
         <Card border="dark">
-          <Card.Header className="text-center" as="h4">
+          <Card.Header className="text-center" as="h5">
             Make a <span className="green-text">Vote</span>
           </Card.Header>
           <Card.Body className="px-md-4">
@@ -199,7 +199,7 @@ export default function VoteSurvey(props) {
                         <Button
                           type="button"
                           variant="info"
-                          className="mr-4 px-5"
+                          className="mr-4 px-md-5"
                         >
                           <Image
                             src={ResultsIcon}

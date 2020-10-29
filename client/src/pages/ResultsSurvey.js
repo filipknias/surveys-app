@@ -164,7 +164,7 @@ export default function ResultsSurvey(props) {
         <Error message={error} />
       ) : (
         <Card border="dark">
-          <Card.Header className="text-center" as="h4">
+          <Card.Header className="text-center" as="h5">
             See <span className="green-text">Results</span>
           </Card.Header>
           <Card.Body className="px-md-4">
@@ -189,7 +189,11 @@ export default function ResultsSurvey(props) {
                 ))}
                 <div className="d-flex justify-content-between justify-content-md-end mt-5">
                   <Link to={`/surveys/${survey._id}/vote`}>
-                    <Button type="button" variant="info" className=" mr-4 px-5">
+                    <Button
+                      type="button"
+                      variant="info"
+                      className=" mr-4 px-md-5"
+                    >
                       <Image src={VoteIcon} height="18" className="mr-2" />
                       Vote
                     </Button>

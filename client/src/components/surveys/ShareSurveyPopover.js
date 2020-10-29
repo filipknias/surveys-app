@@ -49,7 +49,7 @@ export default function ShareSurveyPopover() {
       overlay={shareSurveyPopover()}
       onToggle={() => setCopiedToClipboard(false)}
     >
-      <Button type="button" variant="secondary" className="px-5">
+      <Button type="button" variant="secondary" className="px-md-5">
         <Image src={ShareIcon} height="18" className="mr-2" />
         Share
       </Button>

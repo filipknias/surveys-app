@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 // Bootstrap
 import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 // Context
 import { FormContext } from "../../context/FormContext";
 // Reducer Types
@@ -208,75 +210,82 @@ export default function SurveyOptionsForm() {
       {expirationDate && formState.errors.expirationDate && (
         <Alert variant="warning">{formState.errors.expirationDate}</Alert>
       )}
-      <Form.Group>
-        <Form.Label htmlFor="status">Status</Form.Label>
-        <Form.Control
-          id="status"
-          value={formState.values.status}
-          as="select"
-          className="w-25"
-          onChange={(e) => handleStatusChange(e)}
-        >
-          <option value="public">Public</option>
-          <option value="private">Private</option>
-          <option value="closed">Closed</option>
-        </Form.Control>
-      </Form.Group>
-      <Form.Group>
-        <Form.Check
-          type="checkbox"
-          label="Expiration Date"
-          id="expiration-date"
-          checked={expirationDate}
-          onChange={() => setExpirationDate((prevDate) => !prevDate)}
-        />
-        {expirationDate && (
-          <>
-            <Form.Group>
-              <Form.Control
-                type="date"
-                className="w-25 mt-2"
-                onChange={(e) => handleDateChange(e)}
-                value={
-                  formState.values.expirationDate.date
-                    ? formState.values.expirationDate.date
-                    : ""
-                }
-              ></Form.Control>
-            </Form.Group>
-            <div className="d-flex justify-content-between w-25 mt-3">
-              <Form.Group>
-                <Form.Label>Hour</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={
-                    formState.values.expirationDate.hour
-                      ? formState.values.expirationDate.hour
-                      : ""
-                  }
-                  min="1"
-                  max="24"
-                  onChange={(e) => handleHourChange(e)}
-                />
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Minute</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={
-                    formState.values.expirationDate.minute
-                      ? formState.values.expirationDate.minute
-                      : ""
-                  }
-                  min="0"
-                  max="59"
-                  onChange={(e) => handleMinuteChange(e)}
-                />
-              </Form.Group>
-            </div>
-          </>
-        )}
-      </Form.Group>
+      <Row>
+        <Col md={3}>
+          <Form.Group>
+            <Form.Label htmlFor="status">Status</Form.Label>
+            <Form.Control
+              id="status"
+              value={formState.values.status}
+              as="select"
+              onChange={(e) => handleStatusChange(e)}
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+              <option value="closed">Closed</option>
+            </Form.Control>
+          </Form.Group>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={6} lg={3}>
+          <Form.Group>
+            <Form.Check
+              type="checkbox"
+              label="Expiration Date"
+              id="expiration-date"
+              checked={expirationDate}
+              onChange={() => setExpirationDate((prevDate) => !prevDate)}
+            />
+            {expirationDate && (
+              <>
+                <Form.Group>
+                  <Form.Control
+                    type="date"
+                    className="mt-2"
+                    onChange={(e) => handleDateChange(e)}
+                    value={
+                      formState.values.expirationDate.date
+                        ? formState.values.expirationDate.date
+                        : ""
+                    }
+                  ></Form.Control>
+                </Form.Group>
+                <div className="d-flex justify-content-between mt-3">
+                  <Form.Group>
+                    <Form.Label>Hour</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={
+                        formState.values.expirationDate.hour
+                          ? formState.values.expirationDate.hour
+                          : ""
+                      }
+                      min="1"
+                      max="24"
+                      onChange={(e) => handleHourChange(e)}
+                    />
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Minute</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={
+                        formState.values.expirationDate.minute
+                          ? formState.values.expirationDate.minute
+                          : ""
+                      }
+                      min="0"
+                      max="59"
+                      onChange={(e) => handleMinuteChange(e)}
+                    />
+                  </Form.Group>
+                </div>
+              </>
+            )}
+          </Form.Group>
+        </Col>
+      </Row>
       <Form.Group>
         <Form.Check
           type="checkbox"

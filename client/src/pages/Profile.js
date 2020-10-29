@@ -69,7 +69,7 @@ export default function Profile(props) {
         <Error message={error} />
       ) : (
         <Card border="dark">
-          <Card.Header className="text-center" as="h4">
+          <Card.Header className="text-center" as="h5">
             Profile <span className="green-text">Details</span>
           </Card.Header>
           <Card.Body className="px-md-5">

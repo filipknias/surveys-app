@@ -57,7 +57,7 @@ export default function Explore() {
         <Error message={error} />
       ) : (
         <Card border="dark">
-          <Card.Header className="text-center" as="h4">
+          <Card.Header className="text-center" as="h5">
             Explore <span className="green-text">surveys</span>
           </Card.Header>
           <Card.Body className="px-md-5">

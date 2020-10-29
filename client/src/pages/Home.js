@@ -75,13 +75,13 @@ function Home() {
         <Error message={error} />
       ) : (
         <Card border="dark">
-          <Card.Header className="text-center" as="h4">
+          <Card.Header className="text-center" as="h5">
             Welcome on mySurveys<span className="green-text">.com</span>
           </Card.Header>
           <Card.Body>
             <Row>
               <Col md={6}>
-                <h3 className="text-center mb-4">Latest Surveys</h3>
+                <h4 className="text-center mb-4">Latest Surveys</h4>
                 {loading ? (
                   <Spinner animation="border" className="m-auto d-block" />
                 ) : (
@@ -95,7 +95,7 @@ function Home() {
                 )}
               </Col>
               <Col md={6}>
-                <h3 className="text-center mb-4">Popular Surveys</h3>
+                <h4 className="text-center mb-4">Popular Surveys</h4>
                 {loading ? (
                   <Spinner animation="border" className="m-auto d-block" />
                 ) : (

@@ -99,7 +99,7 @@ export default function CreateSurvey({ history }) {
             <AuthError />
           ) : (
             <Card border="dark">
-              <Card.Header className="text-center" as="h4">
+              <Card.Header className="text-center" as="h5">
                 Create your own{" "}
                 <span className="green-text">custom survey</span>
               </Card.Header>
