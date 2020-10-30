@@ -183,7 +183,7 @@ export default function VoteSurvey(props) {
                       type="submit"
                       variant="primary"
                       className="px-5"
-                      disabled={valid ? false : true}
+                      disabled={valid && !voteLoading ? false : true}
                     >
                       {voteLoading ? (
                         <Spinner
