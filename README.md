@@ -42,3 +42,4 @@ Install all client dependencies.
 Starts both the server and client in full development mode with automatic reloading when changes are made.
 All endpoints available at [http://localhost:5000](http://localhost:5000)
 Open [http://localhost:3000](http://localhost:3000) to view website in your browser.
+
