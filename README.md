@@ -1,14 +1,21 @@
-# My Surveys
+# Surveys App
+MERN Stack survey taking application. Users can create surveys and send votes. Application shows statistics about survey and votes count. Most popular and most recent surveys are shown on dashboard page.
 
-Voting platform which allows you to participate, create and share custom surveys.
+# Tech Stack
++ React
++ Bootstrap
++ React Context API
++ Node JS
++ Express
++ MongoDB
 
-Main features: 
-- Create and sign in to your profile
-- Editing profile
-- Create custom surveys
-- Vote in surveys
-- Browse users statistics about voting
+# Installation
+To install app localy on your computer you need to clone project from github\
+`git clone https://github.com/filipknias/mern-surveys-app.git`
 
-**Front-End:** HTML, React Bootstrap, Javascript, React, React Context API
+Then install all dependencies and run app\
+`npm run client-install && npm run dev`
 
-**Back-End:** Node.js, express, MongoDB, 
+# Live Preview
+
+You can try this app here: https://my-surveys-online.herokuapp.com
